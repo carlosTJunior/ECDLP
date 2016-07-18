@@ -1,13 +1,14 @@
 #ifndef _POINT
 #define _POINT
 
-typedef long BigInt;
+#include <gmp.h>
 
 typedef struct _point {
-    BigInt x;
-    BigInt y;
+    mpz_t x;
+    mpz_t y;
 } Point;
 
-extern Point point_create(BigInt, BigInt);
+extern Point point_create(char*, char*);
+extern Point point_create_mpz_t(mpz_t, mpz_t);
 
 #endif
