@@ -17,3 +17,12 @@ Point point_create_mpz_t(mpz_t x, mpz_t y)
 
     return P;
 }
+
+Point point_at_infinity()
+{
+    Point P;
+    mpz_init_set_si(P.x, -1);
+    mpz_init_set_si(P.y, -1);
+
+    return P;
+}

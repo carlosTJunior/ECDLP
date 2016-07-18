@@ -2,11 +2,12 @@
 #include "ecc.h"
 
 int _lambda(mpz_t lambda, EllipticCurve ec, Point P, Point Q);
+Point _sumWithInfinityPoint(Point P, Point Q);
 
 EllipticCurve ecc_create(char* p, char* a, char* b, char* order)
 {
     EllipticCurve ec;
-    mpz_init_set_str(ec.p, p, 10);
+    mpz_init_set_str(ec.p, p, 10); /* 10 means decimal base */
     mpz_init_set_str(ec.a, a, 10);
     mpz_init_set_str(ec.b, b, 10);
     mpz_init_set_str(ec.order, order, 10);
@@ -22,6 +23,10 @@ void ecc_description(EllipticCurve ec)
 
 Point ecc_add(EllipticCurve ec, Point P, Point Q)
 {
+    if(mpz_cmp_si(P.x, -1) == 0 || mpz_cmp_si(Q.x, -1) == 0) {
+        return _sumWithInfinityPoint(P, Q);
+    }
+
     Point result;
     mpz_t xVal, yVal, lambda;
     mpz_init(xVal);
@@ -48,10 +53,27 @@ Point ecc_add(EllipticCurve ec, Point P, Point Q)
     return result;
 }
 
+Point _sumWithInfinityPoint(Point P, Point Q)
+{
+    if(mpz_cmp_si(P.x, -1) == 0)
+        return Q;
+    else
+        return P;
+}
+
 Point ecc_mul(EllipticCurve ec, mpz_t n, Point P)
 {
-    Point result;
-
+    Point result, tempQ;
+    tempQ = P;
+/*
+    while(mpz_cmp_ui(n, 0) != 0)
+    {
+        if(!mpz_divisible_ui_p(n, 2))
+        {
+            
+        }
+    }
+    */
     /* free space */
     return result;
 }
@@ -79,7 +101,6 @@ int _lambda(mpz_t lambda, EllipticCurve ec, Point P, Point Q)
         mpz_add(numerator, numerator, ec.a);
         mpz_mod(numerator, numerator, ec.p);
     } else {
-        /* mpz_set(lambda, ((Q.y - P.y) * mpz_invert(denominator, Q.x - P.x, ec.p)) % ec.p); */
         /* denominator */
         mpz_sub(denominator, Q.x, P.x);
         mpz_invert(denominator, denominator, ec.p);

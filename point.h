@@ -10,5 +10,6 @@ typedef struct _point {
 
 extern Point point_create(char*, char*);
 extern Point point_create_mpz_t(mpz_t, mpz_t);
+extern Point point_at_infinity();
 
 #endif
