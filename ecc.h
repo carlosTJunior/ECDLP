@@ -1,7 +1,7 @@
 #ifndef _ECC
 #define _ECC
 
-#define DEBUG
+/*#define DEBUG*/
 
 #include "point.h"
 
