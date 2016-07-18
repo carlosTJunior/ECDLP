@@ -23,10 +23,25 @@ void ecc_description(EllipticCurve ec)
 
 Point ecc_add(EllipticCurve ec, Point P, Point Q)
 {
+    /* if P or Q is a point at infinity */
     if(mpz_cmp_si(P.x, -1) == 0 || mpz_cmp_si(Q.x, -1) == 0) {
         return _sumWithInfinityPoint(P, Q);
     }
 
+    /* if P are the inverse of Q in the elliptic curve */
+    if(mpz_cmp(P.x, Q.x) == 0) {
+        /* if P.x == Q.x and P.y == 0, then this point has no inverse */
+        if(mpz_cmp_ui(P.y, 0) == 0)
+            return point_at_infinity();
+        mpz_t temp;
+        mpz_init(temp);
+        mpz_add(temp, P.y, Q.y);
+        if(mpz_cmp(temp, ec.p) == 0) {
+            mpz_clear(temp);
+            return point_at_infinity();
+        }
+        mpz_clear(temp);
+    }
     Point result;
     mpz_t xVal, yVal, lambda;
     mpz_init(xVal);
@@ -65,15 +80,22 @@ Point ecc_mul(EllipticCurve ec, mpz_t n, Point P)
 {
     Point result, tempQ;
     tempQ = P;
-/*
+    /* mpz_divisible_ui_p(a,b) func returns non-zero if b divides a */
+    if(mpz_divisible_ui_p(n, 2))
+        result = point_at_infinity();
+    else
+        result = P;
+
     while(mpz_cmp_ui(n, 0) != 0)
     {
-        if(!mpz_divisible_ui_p(n, 2))
+        tempQ = ecc_add(ec, tempQ, tempQ);
+
+        if(!mpz_divisible_ui_p(n, 2)) /* n is odd */
         {
-            
+            result = ecc_add(ec, result, tempQ);
         }
     }
-    */
+    
     /* free space */
     return result;
 }
