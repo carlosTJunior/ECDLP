@@ -3,6 +3,14 @@
 
 #include "ecc.h"
 
+typedef struct _triple {
+    Point point;
+    mpz_t c;
+    mpz_t d;
+} Triple;
+
+extern gmp_randstate_t state;
+
 extern int pollardrho_serial(mpz_t, EllipticCurve, Point, Point);
 extern int pollardrho_serial_openmp(mpz_t, EllipticCurve, Point, Point);
 extern int pollardrho_parallel_fork(mpz_t, EllipticCurve, Point, Point);
