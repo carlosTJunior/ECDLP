@@ -26,3 +26,12 @@ Point point_at_infinity()
 
     return P;
 }
+
+int point_is_equal(Point P, Point Q)
+{
+    int ret = 0;
+    if(mpz_cmp(P.x, Q.x) == 0 && mpz_cmp(P.y, Q.y) == 0)
+        ret = 1;
+
+    return ret;
+}

@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include "ecc.h"
 
-int _lambda(mpz_t lambda, EllipticCurve ec, Point P, Point Q);
-Point _sumWithInfinityPoint(Point P, Point Q);
+int _lambda(mpz_t lambda, const EllipticCurve ec, const Point P, const Point Q);
+Point _sumWithInfinityPoint(const Point P, const Point Q);
 
-EllipticCurve ecc_create(char* p, char* a, char* b, char* order)
+EllipticCurve 
+ecc_create(const char* p, const char* a, const char* b, const char* order)
 {
     EllipticCurve ec;
     mpz_init_set_str(ec.p, p, 10); /* 10 means decimal base */
@@ -15,13 +16,13 @@ EllipticCurve ecc_create(char* p, char* a, char* b, char* order)
     return ec;
 }
 
-void ecc_description(EllipticCurve ec)
+void ecc_description(const EllipticCurve ec)
 {
     gmp_printf("E(F_%Zd): y^2 = x^3 + %Zdx + %Zd, #E(F_%Zd) = %Zd\n", \
             ec.p, ec.a, ec.b, ec.p, ec.order);
 }
 
-Point ecc_add(EllipticCurve ec, Point P, Point Q)
+Point ecc_add(const EllipticCurve ec, const Point P, const Point Q)
 {
     /* if P or Q is a point at infinity */
     if(mpz_cmp_si(P.x, -1) == 0 || mpz_cmp_si(Q.x, -1) == 0) {
@@ -69,7 +70,7 @@ Point ecc_add(EllipticCurve ec, Point P, Point Q)
     return result;
 }
 
-Point _sumWithInfinityPoint(Point P, Point Q)
+Point _sumWithInfinityPoint(const Point P, const Point Q)
 {
     if(mpz_cmp_si(P.x, -1) == 0)
         return Q;
@@ -77,7 +78,7 @@ Point _sumWithInfinityPoint(Point P, Point Q)
         return P;
 }
 
-Point ecc_mul(EllipticCurve ec, mpz_t n, Point P)
+Point ecc_mul(const EllipticCurve ec, const mpz_t n, const Point P)
 {
     Point result, tempQ;
     tempQ = P;
@@ -106,7 +107,7 @@ Point ecc_mul(EllipticCurve ec, mpz_t n, Point P)
     return result;
 }
 
-int _lambda(mpz_t lambda, EllipticCurve ec, Point P, Point Q)
+int _lambda(mpz_t lambda, const EllipticCurve ec, const Point P, const Point Q)
 {
     #ifdef DEBUG
     printf("Will calculate lambda for\n");
