@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
-//#include "pollardrho.h"
-#include "ecc.h"
+#include "pollardrho.h"
 
-/*
 void init_random_number_generator()
 {
     srand(time(NULL));
@@ -12,11 +10,10 @@ void init_random_number_generator()
     gmp_randinit_mt(state);
     gmp_randseed_ui(state, seed);
 }
-*/
 
 int main()
 {
-    //init_random_number_generator();
+    init_random_number_generator();
     EllipticCurve ec = ecc_create("229", "1", "44", "239");
     ecc_description(ec);
     Point *P = point_create("5", "116");
@@ -29,11 +26,11 @@ int main()
     gmp_printf("P(%Zd, %Zd) and Q(%Zd, %Zd)\n", P->x, P->y, Q->x, Q->y);
     gmp_printf("P+Q = (%Zd, %Zd)\n", R->x, R->y);
     gmp_printf("%Zd*P = (%Zd, %Zd)\n", X->x, X->y);
-    /*
+
     mpz_t result;
     pollardrho_serial(result, ec, P, Q);
     gmp_printf("Result is %Zd\n", result);
     gmp_randclear(state);
-    */
+
     return 0;
 }

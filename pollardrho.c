@@ -10,16 +10,16 @@ gmp_randstate_t state;
 
 
 /* Functions prototypes */
-int init_branches(Triple *branches, const EllipticCurve ec, const Point P,\
-       const Point Q);
-unsigned long int partition_function(const Point P);
+int init_branches(Triple *branches, const EllipticCurve ec, const Point* P,\
+       const Point* Q);
+unsigned long int partition_function(const Point* P);
 void random_number(mpz_t result, const mpz_t max);
 int calculate_result(mpz_t result, const mpz_t c1, const mpz_t c2, \
         const mpz_t d1, const mpz_t d2, const mpz_t order);
 
 int
-pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point P, \
-        const Point Q)
+pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point* P, \
+        const Point* Q)
 {
     Triple branches[L];
     int i;
@@ -27,7 +27,7 @@ pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point P, \
 
     /* Floyd cycle detection algorithm */
     /* c1, d1 and X1 are Tortoise vars, c2, d2 and X2 are Hare vars */
-    Point X1, X2;
+    Point *X1, *X2;
     mpz_t c1, d1, c2, d2; 
     mpz_init(c1);
     mpz_init(d1);
@@ -39,14 +39,14 @@ pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point P, \
     mpz_set(c2, c1);
     mpz_set(d2, d1);
 
-    Point Ptemp = ecc_mul(ec, c1, P);
-    Point Qtemp = ecc_mul(ec, d1, Q);
+    Point* Ptemp = ecc_mul(ec, c1, P);
+    Point* Qtemp = ecc_mul(ec, d1, Q);
     X1 = ecc_add(ec, Ptemp, Qtemp); /* X1 = cP + dQ */
     X2 = ecc_add(ec, Ptemp, Qtemp); /* X2 = X1 */
 
     int has_collided = 0;
     while(!has_collided) {
-        gmp_printf("X1(%Zd, %Zd)\t", X1.x, X1.y);
+        gmp_printf("X1(%Zd, %Zd)\t", X1->x, X1->y);
         int i;
         unsigned long j = partition_function(X1);
         mpz_add(c1, c1, branches[j].c);
@@ -63,12 +63,12 @@ pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point P, \
             mpz_mod(d2, d2, ec.order);
             X2 = ecc_add(ec, X2, branches[j].point);
         }
-        gmp_printf("X2(%Zd, %Zd)\n", X2.x, X2.y);
+        gmp_printf("X2(%Zd, %Zd)\n", X2->x, X2->y);
         if(point_is_equal(X1, X2))
         {
             printf("Collision found at point\n");
-            gmp_printf("X1(%Zd, %Zd)\n", X1.x, X1.y, \
-                    X2.x, X2.y);
+            gmp_printf("X1(%Zd, %Zd)\n", X1->x, X1->y, \
+                    X2->x, X2->y);
             printf("With values \n");
             gmp_printf("c1 = %Zd, d1 = %Zd and c2 = %Zd, d2 = %Zd\n", \
                     c1, d1, c2, d2);
@@ -109,10 +109,10 @@ int calculate_result(mpz_t result, const mpz_t c1, const mpz_t c2, \
 }
 
 /* this function returns P.x % L */
-unsigned long partition_function(const Point P) {
+unsigned long partition_function(const Point* P) {
     mpz_t result;
     mpz_init(result);
-    mpz_mod_ui(result, P.x, L);
+    mpz_mod_ui(result, P->x, L);
 
     return mpz_get_ui(result);
 }
@@ -126,14 +126,14 @@ void random_number(mpz_t result, const mpz_t max)
 }
 
 int init_branches(Triple *branches, const EllipticCurve ec, \
-       const Point P, const Point Q)
+       const Point* P, const Point* Q)
 {
     mpz_t aj, bj;
     mpz_init(aj);
     mpz_init(bj);
     int i;
     for(i = 0; i < L; i++) {
-        Point Rj, Ptemp, Qtemp;
+        Point *Rj, *Ptemp, *Qtemp;
         random_number(aj, ec.order);
         random_number(bj, ec.order);
         Ptemp = ecc_mul(ec, aj, P);
