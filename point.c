@@ -2,45 +2,51 @@
 #include <stdio.h>
 #include "point.h"
 
-Point* point_create(const char* x, const char* y)
+Point* point_alloc()
 {
-    Point *P = (Point*) malloc(sizeof(Point));
-    if(P == NULL) {
-        fprintf(stderr, "ERROR: point_create() -> Cannot create pointer\n");
-        exit(1);
-    }
-    mpz_init_set_str(P->x, x, 10);
-    mpz_init_set_str(P->y, y, 10);
+    Point* P = (Point*) malloc(sizeof(Point));
+    mpz_init(P->x);
+    mpz_init(P->y);
 
     return P;
 }
 
-Point* point_create_mpz_t(const mpz_t x, const mpz_t y)
+int point_create(Point* P, const char* x, const char* y)
 {
-    Point* P = (Point*) malloc(sizeof(Point));
     if(P == NULL) {
-        fprintf(stderr, \
-                "ERROR: point_create_mpz_t() -> Cannot create pointer\n");
+        fprintf(stderr, "ERROR: point_create() -> invalid pointer\n");
         exit(1);
     }
-    mpz_init_set(P->x, x);
-    mpz_init_set(P->y, y);
+    mpz_set_str(P->x, x, 10);
+    mpz_set_str(P->y, y, 10);
 
-    return P;
+    return 0;
 }
 
-Point* point_at_infinity()
+int point_create_mpz_t(Point* P, const mpz_t x, const mpz_t y)
 {
-    Point* P = (Point*) malloc(sizeof(Point));
     if(P == NULL) {
         fprintf(stderr, \
-                "ERROR: point_at_infinity() -> Cannot create pointer\n");
-        exit(1);
+                "ERROR: point_create_mpz_t() -> invalid pointer\n");
+        return -1;
     }
-    mpz_init_set_si(P->x, -1);
-    mpz_init_set_si(P->y, -1);
+    mpz_set(P->x, x);
+    mpz_set(P->y, y);
 
-    return P;
+    return 0;
+}
+
+int point_at_infinity(Point *P)
+{
+    if(P == NULL) {
+        fprintf(stderr, \
+                "ERROR: point_at_infinity() -> invalid pointer\n");
+        return -1;
+    }
+    mpz_set_si(P->x, -1);
+    mpz_set_si(P->y, -1);
+
+    return 0;
 }
 
 int point_is_equal(const Point* P, const Point* Q)
@@ -52,17 +58,16 @@ int point_is_equal(const Point* P, const Point* Q)
     return is_equal;
 }
 
-Point* point_copy(const Point* P)
+int point_copy(Point* self, const Point* other)
 {
-    Point* C = (Point*) malloc(sizeof(Point));
-    if(C == NULL) {
-        fprintf(stderr, "ERROR: point_copy() -> Cannot create pointer\n");
-        exit(1);
+    if(self == NULL) {
+        fprintf(stderr, "ERROR: point_copy() -> invalid pointer\n");
+        return -1;
     }
-    mpz_init_set(C->x, P->x);
-    mpz_init_set(C->y, P->y);
+    mpz_set(self->x, other->x);
+    mpz_set(self->y, other->y);
     
-    return C;
+    return 0;
 }
 
 void point_destroy(Point* P)
