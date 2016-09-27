@@ -13,13 +13,5 @@ extern gmp_randstate_t state;
 
 extern int pollardrho_serial(mpz_t, const EllipticCurve, const Point*, \
        const Point*);
-extern int pollardrho_serial_openmp(mpz_t, EllipticCurve, Point, Point);
-extern int pollardrho_parallel_fork(mpz_t, EllipticCurve, Point, Point);
-extern int pollardrho_parallel_socket(mpz_t, EllipticCurve, Point, Point);
-extern int pollardrho_parallel_openmp(mpz_t, EllipticCurve, Point, Point);
-extern int pollardrho_parallel_pthread(mpz_t, EllipticCurve, Point, Point);
-extern int pollardrho_parallel_mpi(mpz_t, EllipticCurve, Point, Point);
-extern int pollardrho_parallel_cuda(mpz_t, EllipticCurve, Point, Point);
-extern int pollardrho_parallel_opencl(mpz_t, EllipticCurve, Point, Point);
 
 #endif
