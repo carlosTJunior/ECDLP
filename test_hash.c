@@ -3,24 +3,28 @@
 #include <assert.h>
 #include "hashtable.h"
 
-Point* point_create(int x, int y) {
-    Point* p = (Point*) malloc(sizeof(Point));
-    p->x = x;
-    p->y = y;
-
-    return p;
-}
 
 int main() {
     Hashtable* mytable;
     Triple *t1, *t2, *t3;
     Point *p1, *p2, *p3;
-    p1 = point_create(19, 29);
-    p2 = point_create(17, 26);
-    p3 = point_create(19, 23);
-    t1 = triple_create(1, 2, *p1);
-    t2 = triple_create(3, 2, *p2);
-    t3 = triple_create(4, 2, *p3);
+    mpz_t m1, m2, m3, m4;
+
+    p1 = point_alloc();
+    p2 = point_alloc();
+    p3 = point_alloc();
+    point_create(p1, "19", "29");
+    point_create(p2, "17", "26");
+    point_create(p3, "19", "23");
+
+    mpz_init_set_ui(m1, 1);
+    mpz_init_set_ui(m2, 2);
+    mpz_init_set_ui(m3, 3);
+    mpz_init_set_ui(m4, 4);
+
+    t1 = triple_create(m1, m2, *p1);
+    t2 = triple_create(m3, m2, *p2);
+    t3 = triple_create(m4, m2, *p3);
 
     mytable = hashtable_create(50);
     assert(mytable);

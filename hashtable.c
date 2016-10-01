@@ -4,15 +4,16 @@
 #include "hashtable.h"
 
 struct triple {
-    long a;
-    long b;
+    mpz_t a;
+    mpz_t b;
     Point point;
 };
 
-Triple* triple_create(long a, long b, Point point) {
+Triple* triple_create(mpz_t a, mpz_t b, Point point) {
     Triple* t = (Triple*) malloc(sizeof(Triple));
-    t->a = a;
-    t->b = b;
+
+    mpz_init_set(t->a, a);
+    mpz_init_set(t->b, b);
     t->point = point;
 
     return t;
@@ -46,7 +47,9 @@ int chain_search(Chain* chain, Triple* triple) {
     temp = chain->list;
     while(temp) {
         /* Change this. It should use a hash obtained from point->x and point->y values */
-        if(temp->data->point.x == triple->point.x && temp->data->point.y == triple->point.y)
+        int is_x_equal = mpz_cmp(temp->data->point.x, triple->point.x);
+        int is_y_equal = mpz_cmp(temp->data->point.y, triple->point.y);
+        if(is_x_equal == 0 && is_y_equal == 0)
             return 1;
         temp = temp->next;
     }
@@ -60,8 +63,15 @@ struct hashtable {
 };
 
 /* Temporary hash function */
-long hash (Triple* triple, long size) {
-    return triple->point.x % size;
+long hash (const Triple* triple, unsigned long size) {
+    unsigned long result;
+    mpz_t temp_result;
+
+    mpz_init(temp_result);
+
+    result = mpz_mod_ui(temp_result, triple->point.x, size);
+    mpz_clear(temp_result);
+    return result;
 }
 
 Hashtable* hashtable_create(long size) {
@@ -88,7 +98,7 @@ int hashtable_insert(Hashtable* hashtable, Triple* triple) {
 
     h = hash(triple, hashtable->size);
     if (!chain_search(&hashtable->chain[h], triple)) {
-        fprintf(stdout, "Inserting (%ld, %ld, (%d, %d)) into the hashtable position %ld\n",
+        gmp_printf("Inserting (%Zd, %Zd, (%Zd, %Zd)) into the hashtable position %ld\n",
                 triple->a, triple->b, triple->point.x, triple->point.y, h);
         chain_insert(&hashtable->chain[h], triple);
         hashtable->n_elems++;
@@ -104,11 +114,11 @@ int hashtable_search(Hashtable* hashtable, Triple* triple) {
 
     h = hash(triple, hashtable->size);
     if (chain_search(&hashtable->chain[h], triple)) {
-        fprintf(stdout, "Element (%ld, %ld, (%d, %d)) found into the hashtable position %ld\n",
+        gmp_printf("Element (%Zd, %Zd, (%Zd, %Zd)) found into the hashtable position %ld\n",
                 triple->a, triple->b, triple->point.x, triple->point.y, h);
         return 1;
     } else {
-        fprintf(stdout, "Cannot find element (%ld, %ld, (%d, %d)) into the hashtable\n",
+        gmp_printf("Cannot find element (%Zd, %Zd, (%Zd, %Zd)) into the hashtable\n",
                 triple->a, triple->b, triple->point.x, triple->point.y);
         return 0;
     }
