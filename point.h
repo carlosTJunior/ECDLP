@@ -9,8 +9,8 @@ typedef struct _point {
 } Point;
 
 extern Point* point_alloc();
-extern int point_create(Point*, const char*, const char*);
-extern int point_create_mpz_t(Point*, const mpz_t, const mpz_t);
+extern int point_init(Point*, const char*, const char*);
+extern int point_init_mpz_t(Point*, const mpz_t, const mpz_t);
 extern int point_at_infinity(Point*);
 extern int point_is_equal(const Point*, const Point*);
 extern int point_copy(Point*, const Point*);

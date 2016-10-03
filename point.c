@@ -11,7 +11,7 @@ Point* point_alloc()
     return P;
 }
 
-int point_create(Point* P, const char* x, const char* y)
+int point_init(Point* P, const char* x, const char* y)
 {
     if(P == NULL) {
         fprintf(stderr, "ERROR: point_create() -> invalid pointer\n");
@@ -23,7 +23,7 @@ int point_create(Point* P, const char* x, const char* y)
     return 0;
 }
 
-int point_create_mpz_t(Point* P, const mpz_t x, const mpz_t y)
+int point_init_mpz_t(Point* P, const mpz_t x, const mpz_t y)
 {
     if(P == NULL) {
         fprintf(stderr, \

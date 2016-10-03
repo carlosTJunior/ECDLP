@@ -56,6 +56,26 @@ int chain_search(Chain* chain, Triple* triple) {
     return 0;
 }
 
+int chain_collided(Chain* chain, Triple* triple, Triple* r_triple) {
+    List* temp;
+    if (!chain || !triple) {
+        fprintf(stderr, "Invalid args: chain_collided()\n");
+        return -1;
+    }
+
+    temp = chain->list;
+    while(temp) {
+        int is_x_equal = mpz_cmp(temp->data->point.x, triple->point.x);
+        int is_y_equal = mpz_cmp(temp->data->point.y, triple->point.y);
+        if(is_x_equal == 0 && is_y_equal == 0) {
+            r_triple = temp->data;
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
+}
+
 struct hashtable {
     long size;
     long n_elems;
@@ -97,6 +117,9 @@ int hashtable_insert(Hashtable* hashtable, Triple* triple) {
     if(!hashtable || !triple) return -1;
 
     h = hash(triple, hashtable->size);
+    /* OBS: this chain search will be duplicated into Pollard's rho algorithm.
+     * Maybe this should be deleted
+     */
     if (!chain_search(&hashtable->chain[h], triple)) {
         gmp_printf("Inserting (%Zd, %Zd, (%Zd, %Zd)) into the hashtable position %ld\n",
                 triple->a, triple->b, triple->point.x, triple->point.y, h);
@@ -122,4 +145,26 @@ int hashtable_search(Hashtable* hashtable, Triple* triple) {
                 triple->a, triple->b, triple->point.x, triple->point.y);
         return 0;
     }
+}
+
+int hashtable_collide(Hashtable* hashtable, Point* point, Triple* triple) {
+    mpz_t dummy_x, dummy_y;
+    Triple* dummy_triple;
+    long h;
+
+    if(!hashtable || !point) {
+        fprintf(stderr, "Invalid args: hashtable_collide()\n");
+        return -1;
+    }
+
+    mpz_init_set_ui(dummy_x, 0);
+    mpz_init_set_ui(dummy_y, 0);
+    dummy_triple = triple_create(dummy_x, dummy_y, *point);
+
+    h = hash(dummy_triple, hashtable->size);
+    if(chain_collided(&hashtable->chain[h], dummy_triple, triple)) {
+        fprintf(stdout, "Collision found\n");
+    }
+
+    return 0;
 }
