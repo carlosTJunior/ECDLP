@@ -15,7 +15,7 @@ int main() {
     p3 = point_alloc();
     point_init(p1, "19", "29");
     point_init(p2, "17", "26");
-    point_init(p3, "19", "27");
+    point_init(p3, "19", "29");
 
     mpz_init_set_ui(m1, 1);
     mpz_init_set_ui(m2, 2);
@@ -32,13 +32,13 @@ int main() {
     hashtable_insert(mytable, t1);
     hashtable_insert(mytable, t2);
 
-    t4 = NULL;
+    t4 = triple_create(m1, m2, *p2);
     hashtable_collide(mytable, p3, t4);
-    assert(t4);
-    //gmp_printf("t4(a: %Zd, b: %Zd)\n", *t4->a, *t4->b);
-    /*
-    assert(t4->point.x == 19 && t4->point.y == 29);
 
+    gmp_printf("t4(a: %Zd, b: %Zd, P(%Zd, %Zd))\n", t4->a, t4->b, t4->point.x,
+           t4->point.y );
+
+    /*
     hashtable_insert(mytable, t3);
     assert(hashtable_n_elems(mytable) == 3);
     */

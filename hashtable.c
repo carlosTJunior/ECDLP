@@ -3,11 +3,6 @@
 #include <assert.h>
 #include "hashtable.h"
 
-struct triple {
-    mpz_t a;
-    mpz_t b;
-    Point point;
-};
 
 Triple* triple_create(mpz_t a, mpz_t b, Point point) {
     Triple* t = (Triple*) malloc(sizeof(Triple));
@@ -56,6 +51,9 @@ int chain_search(Chain* chain, Triple* triple) {
     return 0;
 }
 
+/* chain_collided will look for a collision of a triple (arg triple) into a
+ * chain (arg chain) and will copy the collided triple into r_triple
+ */
 int chain_collided(Chain* chain, Triple* triple, Triple* r_triple) {
     List* temp;
     if (!chain || !triple) {
@@ -69,6 +67,7 @@ int chain_collided(Chain* chain, Triple* triple, Triple* r_triple) {
         int is_y_equal = mpz_cmp(temp->data->point.y, triple->point.y);
         if(is_x_equal == 0 && is_y_equal == 0) {
             r_triple = temp->data;
+            r_triple->point = temp->data->point;
             return 1;
         }
         temp = temp->next;
@@ -162,7 +161,7 @@ int hashtable_collide(Hashtable* hashtable, Point* point, Triple* triple) {
     dummy_triple = triple_create(dummy_x, dummy_y, *point);
 
     h = hash(dummy_triple, hashtable->size);
-    if(chain_collided(&hashtable->chain[h], dummy_triple, triple)) {
+    if (chain_collided(&hashtable->chain[h], dummy_triple, triple)) {
         fprintf(stdout, "Collision found\n");
     }
 
