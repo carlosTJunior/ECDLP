@@ -74,7 +74,7 @@ int ecc_add(Point *R, const EllipticCurve ec, const Point* P, const Point* Q)
     mpz_sub(yVal, yVal, P->y);
     mpz_mod(yVal, yVal, ec.p);
 
-    point_create_mpz_t(R, xVal, yVal);
+    point_init_mpz_t(R, xVal, yVal);
     /* free space */
     mpz_clear(xVal);
     mpz_clear(yVal);

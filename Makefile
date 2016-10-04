@@ -1,6 +1,6 @@
 CC = gcc
 
-OBJ = pollardrho.c point.c main.c ecc.c #hashtable.c
+OBJ = pollardrho.c point.c main.c ecc.c pollardrho_serial.c #hashtable.c
 
 LIBS = -lgmp
 

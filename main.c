@@ -14,13 +14,13 @@ void init_random_number_generator()
 int main()
 {
     init_random_number_generator();
-    /*
     EllipticCurve ec = ecc_create("229", "1", "44", "239");
     ecc_description(ec);
     Point *P = point_alloc();
-    point_create(P, "5", "116");
+    point_init(P, "5", "116");
     Point *Q = point_alloc();
-    point_create(Q, "155", "166");
+    point_init(Q, "155", "166");
+    /*
     Point *R = point_alloc();
     ecc_add(R, ec, P, Q);
     mpz_t num;
@@ -31,7 +31,6 @@ int main()
     gmp_printf("P(%Zd, %Zd) and Q(%Zd, %Zd)\n", P->x, P->y, Q->x, Q->y);
     gmp_printf("P+Q = (%Zd, %Zd)\n", R->x, R->y);
     gmp_printf("%Zd*P = (%Zd, %Zd)\n", X->x, X->y);
-    */
     EllipticCurve ec = ecc_create("69234577397554139",\
             "64326",\
             "11751",\
@@ -42,6 +41,7 @@ int main()
     Point *Q = point_alloc();
     point_create(Q, "51992249945632156", "48952372232107871");
 
+    */
     mpz_t result;
     pollardrho_serial(result, ec, P, Q);
     gmp_printf("Result is %Zd\n", result);
