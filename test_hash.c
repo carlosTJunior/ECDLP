@@ -23,12 +23,18 @@ int main() {
     mpz_init_set_ui(m2, 2);
     mpz_init_set_ui(m3, 3);
     mpz_init_set_ui(m4, 4);
-    mpz_init_set_ui(m4, 0);
+    mpz_init_set_ui(m5, 0);
 
     t1 = triple_create(m1, m2, *p1);
     t2 = triple_create(m3, m2, *p2);
     t3 = triple_create(m4, m2, *p3);
     collided_triple = triple_create(m5, m5, *dummy_point);
+    gmp_printf("t1 = (%Zd, %Zd, (%Zd, %Zd))\n", t1->a, t1->b, t1->point.x, t1->point.y);
+    gmp_printf("t2 = (%Zd, %Zd, (%Zd, %Zd))\n", t2->a, t2->b, t2->point.x, t2->point.y);
+    gmp_printf("t3 = (%Zd, %Zd, (%Zd, %Zd))\n", t3->a, t3->b, t3->point.x, t3->point.y);
+    gmp_printf("ct = (%Zd, %Zd, (%Zd, %Zd))\n", 
+            collided_triple->a, collided_triple->b, collided_triple->point.x,
+            collided_triple->point.y);
 
     mytable = hashtable_create(50);
     assert(mytable);

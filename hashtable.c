@@ -46,7 +46,10 @@ int chain_search(Chain* chain, Triple* triple, Triple* c_triple) {
         int is_x_equal = mpz_cmp(temp->data->point.x, triple->point.x);
         int is_y_equal = mpz_cmp(temp->data->point.y, triple->point.y);
         if(is_x_equal == 0 && is_y_equal == 0) {
-            c_triple = temp->data;
+            mpz_set(c_triple->a, temp->data->a);
+            mpz_set(c_triple->b, temp->data->b);
+            mpz_set(c_triple->point.x, temp->data->point.x);
+            mpz_set(c_triple->point.y, temp->data->point.y);
             return 1;
         }
         temp = temp->next;
