@@ -6,13 +6,13 @@
 typedef struct hashtable Hashtable;
 
 typedef struct triple {
-    mpz_t a;
-    mpz_t b;
+    mpz_t c;
+    mpz_t d;
     Point point;
 } Triple;
 
 /* creation functions */
-extern Triple* triple_create(mpz_t a, mpz_t b, Point point);
+extern Triple* triple_create(mpz_t c, mpz_t d, Point point);
 extern Hashtable* hashtable_create(long size);
 
 /* Insert a triple into the hashtable. 

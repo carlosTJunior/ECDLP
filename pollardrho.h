@@ -2,17 +2,12 @@
 #define _POLLARD_RHO
 
 #include "ecc.h"
+#include "hashtable.h"
 
 /* number of branches */
 #define L 32
 
-typedef struct _triple {
-    Point point;
-    mpz_t c;
-    mpz_t d;
-} Triple;
-
-/* to generate random numbers, it's necessary to set a state */
+/* Global state to generate random numbers */
 extern gmp_randstate_t state;
 
 /* General Pollard Rho functions */
@@ -27,4 +22,6 @@ extern int calculate_result(mpz_t result, const mpz_t c1, const mpz_t c2, \
 extern int pollardrho_serial(mpz_t, const EllipticCurve, const Point*, \
        const Point*);
 
+extern int pollardrho_parallel(mpz_t, const EllipticCurve, const Point*, \
+       const Point*);
 #endif
