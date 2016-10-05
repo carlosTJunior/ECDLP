@@ -22,6 +22,6 @@ extern int calculate_result(mpz_t result, const mpz_t c1, const mpz_t c2, \
 extern int pollardrho_serial(mpz_t, const EllipticCurve, const Point*, \
        const Point*);
 
-extern int pollardrho_parallel(mpz_t, const EllipticCurve, const Point*, \
+extern int pollardrho_parallel_fork(mpz_t, const EllipticCurve, const Point*, \
        const Point*);
 #endif

@@ -27,9 +27,9 @@ pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point* P, \
     mpz_set(c2, c1);
     mpz_set(d2, d1);
 
-    Point* Ptemp = point_alloc();
+    Point* Ptemp = point_alloc(); /* cP */
     ecc_mul(Ptemp, ec, c1, P);
-    Point* Qtemp = point_alloc();
+    Point* Qtemp = point_alloc(); /* dQ */
     ecc_mul(Qtemp, ec, d1, Q);
     ecc_add(X1, ec, Ptemp, Qtemp); /* X1 = cP + dQ */
     ecc_add(X2, ec, Ptemp, Qtemp); /* X2 = X1 */
