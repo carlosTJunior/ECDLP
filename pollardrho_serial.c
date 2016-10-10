@@ -53,6 +53,7 @@ int pollardrho_serial(mpz_t result,
         //gmp_printf("X2(%Zd, %Zd)\n", X2->x, X2->y);
         if(point_is_equal(X1, X2))
         {
+            printf("---------------------------------------------\n");
             printf("Collision found at point\n");
             gmp_printf("X1(%Zd, %Zd)\n", X1->x, X1->y, \
                     X2->x, X2->y);

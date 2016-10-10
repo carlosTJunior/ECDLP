@@ -136,6 +136,12 @@ int ecc_mul(Point* R, const EllipticCurve ec, const mpz_t n, const Point* P)
     return 0;
 }
 
+int ecc_halving(Point* R, const EllipticCurve ec, const Point* P)
+{
+    /* yet to implement */
+    return 0;
+}
+
 int
 _lambda(mpz_t lambda, const EllipticCurve ec, const Point* P, const Point* Q)
 {

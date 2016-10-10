@@ -28,12 +28,12 @@ extern int calculate_result(mpz_t result,
                             const mpz_t order);
 
 /* iteration functions */
-extern void r_walking(const EllipticCurve ec,
-                      mpz_t c,
-                      mpz_t d, 
-                      Point* X, 
-                      const Triple* branches, 
-                      const unsigned long j);
+extern void r_adding_walk(const EllipticCurve ec,
+                          mpz_t c,
+                          mpz_t d, 
+                          Point* X, 
+                          const Triple* branches, 
+                          const unsigned long j);
 
 
 /* Pollard Rho algorithms */
