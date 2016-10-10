@@ -81,3 +81,17 @@ int init_branches(Triple *branches, const EllipticCurve ec, \
     mpz_clear(bj);
     return 0;
 }
+
+void r_walking(const EllipticCurve ec,
+               mpz_t c,
+               mpz_t d, 
+               Point* X, 
+               const Triple* branches, 
+               const unsigned long j)
+{
+    mpz_add(c, c, branches[j].c);
+    mpz_add(d, d, branches[j].d);
+    mpz_mod(c, c, ec.order);
+    mpz_mod(d, d, ec.order);
+    ecc_add(X, ec, X, &branches[j].point);
+}

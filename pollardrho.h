@@ -18,6 +18,15 @@ extern void random_number(mpz_t result, const mpz_t max);
 extern int calculate_result(mpz_t result, const mpz_t c1, const mpz_t c2, \
         const mpz_t d1, const mpz_t d2, const mpz_t order);
 
+/* iteration functions */
+extern void r_walking(const EllipticCurve ec,
+                      mpz_t c,
+                      mpz_t d, 
+                      Point* X, 
+                      const Triple* branches, 
+                      const unsigned long j);
+
+
 /* Pollard Rho algorithms */
 extern int pollardrho_serial(mpz_t, const EllipticCurve, const Point*, \
        const Point*);

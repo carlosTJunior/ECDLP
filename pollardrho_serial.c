@@ -3,7 +3,6 @@
 #include "pollardrho.h"
 
 
-
 int
 pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point* P, \
         const Point* Q)
@@ -39,19 +38,11 @@ pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point* P, \
     while(!has_collided) {
         //gmp_printf("X1(%Zd, %Zd)\t", X1->x, X1->y);
         j = partition_function(X1);
-        mpz_add(c1, c1, branches[j].c);
-        mpz_add(d1, d1, branches[j].d);
-        mpz_mod(c1, c1, ec.order);
-        mpz_mod(d1, d1, ec.order);
-        ecc_add(X1, ec, X1, &branches[j].point);
+        r_walking(ec, c1, d1, X1, branches, j);
 
         for(i = 0; i < 2; i++) {
             j = partition_function(X2);
-            mpz_add(c2, c2, branches[j].c);
-            mpz_add(d2, d2, branches[j].d);
-            mpz_mod(c2, c2, ec.order);
-            mpz_mod(d2, d2, ec.order);
-            ecc_add(X2, ec, X2, &branches[j].point);
+            r_walking(ec, c2, d2, X2, branches, j);
         }
         //gmp_printf("X2(%Zd, %Zd)\n", X2->x, X2->y);
         if(point_is_equal(X1, X2))
