@@ -2,10 +2,16 @@
 #include <stdlib.h>
 #include "pollardrho.h"
 
-
-int
-pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point* P, \
-        const Point* Q)
+int pollardrho_serial(mpz_t result, 
+                             const EllipticCurve ec, 
+                             const Point* P,
+                             const Point* Q, 
+                             void (*iteration)(const EllipticCurve ec,
+                                               mpz_t c,
+                                               mpz_t d,
+                                               Point* X,
+                                               const Triple* branches,
+                                               const unsigned long i))
 {
     Triple branches[L];
     int i;
@@ -38,11 +44,11 @@ pollardrho_serial(mpz_t result, const EllipticCurve ec, const Point* P, \
     while(!has_collided) {
         //gmp_printf("X1(%Zd, %Zd)\t", X1->x, X1->y);
         j = partition_function(X1);
-        r_walking(ec, c1, d1, X1, branches, j);
+        (*iteration)(ec, c1, d1, X1, branches, j);
 
         for(i = 0; i < 2; i++) {
             j = partition_function(X2);
-            r_walking(ec, c2, d2, X2, branches, j);
+            (*iteration)(ec, c2, d2, X2, branches, j);
         }
         //gmp_printf("X2(%Zd, %Zd)\n", X2->x, X2->y);
         if(point_is_equal(X1, X2))

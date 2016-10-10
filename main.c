@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     */
 
     mpz_t result;
-    pollardrho_serial(result, ec, P, Q);
+    pollardrho_serial(result, ec, P, Q, r_walking);
     gmp_printf("Result is %Zd\n", result);
     gmp_randclear(state);
     point_destroy(P);
