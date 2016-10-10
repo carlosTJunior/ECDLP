@@ -3,15 +3,15 @@
 #include "pollardrho.h"
 
 int pollardrho_serial(mpz_t result, 
-                             const EllipticCurve ec, 
-                             const Point* P,
-                             const Point* Q, 
-                             void (*iteration)(const EllipticCurve ec,
-                                               mpz_t c,
-                                               mpz_t d,
-                                               Point* X,
-                                               const Triple* branches,
-                                               const unsigned long i))
+                      const EllipticCurve ec, 
+                      const Point* P,
+                      const Point* Q, 
+                      void (*iteration)(const EllipticCurve ec,
+                                        mpz_t c,
+                                        mpz_t d,
+                                        Point* X,
+                                        const Triple* branches,
+                                        const unsigned long i))
 {
     Triple branches[L];
     int i;

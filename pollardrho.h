@@ -48,6 +48,15 @@ extern int pollardrho_serial(mpz_t result,
                                                const Triple* branches,
                                                const unsigned long i));
 
-extern int pollardrho_parallel_fork(mpz_t, const EllipticCurve, const Point*, \
-       const Point*);
+extern int pollardrho_parallel_fork(mpz_t result,
+                                    const EllipticCurve ec,
+                                    const Point* P,
+                                    const Point* Q,
+                                    void (*iteration)(const EllipticCurve ec,
+                                                      mpz_t c,
+                                                      mpz_t d,
+                                                      Point* X,
+                                                      const Triple* branches,
+                                                      const unsigned long i));
+
 #endif

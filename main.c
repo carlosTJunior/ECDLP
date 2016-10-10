@@ -18,28 +18,57 @@ void init_random_number_generator()
 int main(int argc, char* argv[])
 {
     int opt;
+
+    /* Pointer to a iteration function to be used */
     void (*iteration_function)(const EllipticCurve,
                                mpz_t, mpz_t, Point*,
                                const Triple*,
                                const unsigned long);
 
+    /* Pointer to a Pollard Rho algorithm version to be used */
+    int (*pollard_algorithm)(mpz_t result, 
+                             const EllipticCurve ec, 
+                             const Point* P,
+                             const Point* Q, 
+                             void (*iteration)(const EllipticCurve ec,
+                                               mpz_t c,
+                                               mpz_t d,
+                                               Point* X,
+                                               const Triple* branches,
+                                               const unsigned long i));
+
     iteration_function = NULL;
-    while( (opt = getopt(argc, argv, "+w:")) != -1) {
+    pollard_algorithm = NULL;
+
+    while( (opt = getopt(argc, argv, "+a:w:")) != -1) {
         switch(opt) {
-        case 'w': 
+        case 'w': /* walk (iteraction) function */
+            /* r = r_adding_walk */
             if(strcmp(optarg, "r") == 0) {
                 iteration_function = r_adding_walk;
             }
             break;
 
+        case 'a': /* algorithm */
+            /* serial pollard rho */
+            if(strcmp(optarg, "serial") == 0) {
+                pollard_algorithm = pollardrho_serial;
+            }
+            break;
+
         default:
             iteration_function = r_adding_walk;
+            pollard_algorithm = pollardrho_serial;
         }
     }
     printf("\n\n");
     if(iteration_function == NULL) {
         fprintf(stdout, "Iteration function not selected. Using r-adding-walk as default\n");
         iteration_function = r_adding_walk;
+    }
+    if(pollard_algorithm == NULL) {
+        fprintf(stdout, "Algorithm not selected: Using 'Serial' as default\n");
+        pollard_algorithm = pollardrho_serial;
     }
 
     init_random_number_generator();
@@ -63,7 +92,9 @@ int main(int argc, char* argv[])
     */
 
     mpz_t result;
-    pollardrho_serial(result, ec, P, Q, iteration_function);
+
+    (*pollard_algorithm)(result, ec, P, Q, iteration_function);
+
     gmp_printf("Result is %Zd\n", result);
     gmp_randclear(state);
     point_destroy(P);
