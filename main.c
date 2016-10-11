@@ -53,6 +53,8 @@ int main(int argc, char* argv[])
             /* serial pollard rho */
             if(strcmp(optarg, "serial") == 0) {
                 pollard_algorithm = pollardrho_serial;
+            } else if(strcmp(optarg, "fork") == 0) {
+                pollard_algorithm = pollardrho_parallel_fork;
             }
             break;
 
