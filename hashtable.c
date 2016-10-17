@@ -4,11 +4,11 @@
 #include "hashtable.h"
 
 
-Triple* triple_create(mpz_t c, mpz_t d, Point point) {
+Triple* triple_create(BigInt c, BigInt d, Point point) {
     Triple* t = (Triple*) malloc(sizeof(Triple));
 
-    mpz_init_set(t->c, c);
-    mpz_init_set(t->d, d);
+    t->c = c;
+    t->d = d;
     t->point = point;
 
     return t;
@@ -43,13 +43,11 @@ int chain_search(Chain* chain, Triple* triple, Triple* c_triple) {
     temp = chain->list;
     while(temp) {
     /* Change this. It should use a hash obtained from point->x and point->y values */
-        int is_x_equal = mpz_cmp(temp->data->point.x, triple->point.x);
-        int is_y_equal = mpz_cmp(temp->data->point.y, triple->point.y);
-        if(is_x_equal == 0 && is_y_equal == 0) {
-            mpz_set(c_triple->c, temp->data->c);
-            mpz_set(c_triple->d, temp->data->d);
-            mpz_set(c_triple->point.x, temp->data->point.x);
-            mpz_set(c_triple->point.y, temp->data->point.y);
+        if(point_is_equal(&temp->data->point, &triple->point)) {
+            c_triple->c = temp->data->c;
+            c_triple->d = temp->data->d;
+            c_triple->point.x = temp->data->point.x;
+            c_triple->point.y = temp->data->point.y;
             return 1;
         }
         temp = temp->next;
@@ -66,14 +64,8 @@ struct hashtable {
 
 /* Temporary hash function */
 long hash (const Triple* triple, unsigned long size) {
-    unsigned long result;
-    mpz_t temp_result;
 
-    mpz_init(temp_result);
-
-    result = mpz_mod_ui(temp_result, triple->point.x, size);
-    mpz_clear(temp_result);
-    return result;
+    return triple->point.x % size;
 }
 
 Hashtable* hashtable_create(long size) {
@@ -100,15 +92,15 @@ int hashtable_insert(Hashtable* hashtable, Triple* triple, Triple* c_triple) {
 
     h = hash(triple, hashtable->size);
     if (!chain_search(&hashtable->chain[h], triple, c_triple)) {
-        gmp_printf("Inserting (%Zd, %Zd, (%Zd, %Zd)) into the hashtable position %ld\n",
+        printf("Inserting (%ld, %ld, (%ld, %ld)) into the hashtable position %ld\n",
                 triple->c, triple->d, triple->point.x, triple->point.y, h);
         chain_insert(&hashtable->chain[h], triple);
         hashtable->n_elems++;
     } else {
-        gmp_printf("Collision found in point (%Zd, %Zd)\n",
-                      triple->point.x, triple->point.y);
-        gmp_printf("\ta1 = %Zd, b1 = %Zd\n", triple->c, triple->d);
-        gmp_printf("\ta2 = %Zd, b2 = %Zd\n", c_triple->c, c_triple->d);
+        printf("Collision found in point (%ld, %ld)\n",
+                     triple->point.x, triple->point.y);
+        printf("\ta1 = %ld, b1 = %ld\n", triple->c, triple->d);
+        printf("\ta2 = %ld, b2 = %ld\n", c_triple->c, c_triple->d);
     }
     return hashtable->n_elems;
 }
