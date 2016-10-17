@@ -11,8 +11,10 @@ void init_random_number_generator()
     int seed = rand();
 
     /* This state is a global variable declared in pollardrho.h */
+    /*
     gmp_randinit_mt(state);
     gmp_randseed_ui(state, seed);
+    */
 }
 
 int main(int argc, char* argv[])
@@ -21,28 +23,27 @@ int main(int argc, char* argv[])
 
     /* Pointer to a iteration function to be used */
     void (*iteration_function)(const EllipticCurve,
-                               mpz_t, mpz_t, Point*,
+                               BigInt*, BigInt*, Point*,
                                const Triple*,
                                const unsigned long);
 
     /* Pointer to a Pollard Rho algorithm version to be used */
-    int (*pollard_algorithm)(mpz_t result, 
-                             const EllipticCurve ec, 
-                             const Point* P,
-                             const Point* Q, 
-                             void (*iteration)(const EllipticCurve ec,
-                                               mpz_t c,
-                                               mpz_t d,
-                                               Point* X,
-                                               const Triple* branches,
-                                               const unsigned long i));
+    BigInt (*pollard_algorithm)(const EllipticCurve ec, 
+                                const Point* P,
+                                const Point* Q, 
+                                void (*iteration)(const EllipticCurve ec,
+                                                  BigInt* c,
+                                                  BigInt* d,
+                                                  Point* X,
+                                                  const Triple* branches,
+                                                  const unsigned long i));
 
     iteration_function = NULL;
     pollard_algorithm = NULL;
 
     while( (opt = getopt(argc, argv, "+a:w:")) != -1) {
         switch(opt) {
-        case 'w': /* walk (iteraction) function */
+        case 'w': /* walk (iteration) function */
             /* r = r_adding_walk */
             if(strcmp(optarg, "r") == 0) {
                 iteration_function = r_adding_walk;
@@ -53,9 +54,13 @@ int main(int argc, char* argv[])
             /* serial pollard rho */
             if(strcmp(optarg, "serial") == 0) {
                 pollard_algorithm = pollardrho_serial;
-            } else if(strcmp(optarg, "fork") == 0) {
+            }
+            /* parallel using fork */
+            /*
+            else if(strcmp(optarg, "fork") == 0) {
                 pollard_algorithm = pollardrho_parallel_fork;
             }
+            */
             break;
 
         default:
@@ -74,12 +79,12 @@ int main(int argc, char* argv[])
     }
 
     init_random_number_generator();
-    EllipticCurve ec = ecc_create("229", "1", "44", "239");
+    EllipticCurve ec = ecc_create(229, 1, 44, 239);
     ecc_description(ec);
     Point *P = point_alloc();
-    point_init(P, "5", "116");
+    point_init(P, 5, 116);
     Point *Q = point_alloc();
-    point_init(Q, "155", "166");
+    point_init(Q, 155, 166);
 
     /*
     EllipticCurve ec = ecc_create("69234577397554139",\
@@ -93,12 +98,12 @@ int main(int argc, char* argv[])
     point_init(Q, "51992249945632156", "48952372232107871");
     */
 
-    mpz_t result;
+    BigInt result;
 
-    (*pollard_algorithm)(result, ec, P, Q, iteration_function);
+    result = (*pollard_algorithm)(ec, P, Q, iteration_function);
 
-    gmp_printf("Result is %Zd\n", result);
-    gmp_randclear(state);
+    printf("Result is %ld\n", result);
+    //gmp_randclear(state);
     point_destroy(P);
     point_destroy(Q);
     //point_destroy(R);
