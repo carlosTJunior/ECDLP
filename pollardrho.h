@@ -8,7 +8,7 @@
 #define L 32
 
 /* Global state to generate random numbers */
-extern gmp_randstate_t state;
+//extern gmp_randstate_t state;
 
 /* General Pollard Rho functions */
 extern int init_branches(Triple *branches, 
@@ -16,47 +16,44 @@ extern int init_branches(Triple *branches,
                          const Point* P,
                          const Point* Q);
 
-extern unsigned long int partition_function(const Point* P);
+extern BigInt partition_function(const Point* P);
 
-extern void random_number(mpz_t result, const mpz_t max);
+extern BigInt random_number(const BigInt max);
 
-extern int calculate_result(mpz_t result, 
-                            const mpz_t c1, 
-                            const mpz_t c2,
-                            const mpz_t d1, 
-                            const mpz_t d2, 
-                            const mpz_t order);
+extern BigInt calculate_result(const BigInt c1, 
+                               const BigInt c2,
+                               const BigInt d1, 
+                               const BigInt d2, 
+                               const BigInt order);
 
 /* iteration functions */
 extern void r_adding_walk(const EllipticCurve ec,
-                          mpz_t c,
-                          mpz_t d, 
+                          BigInt* c,
+                          BigInt* d, 
                           Point* X, 
                           const Triple* branches, 
                           const unsigned long j);
 
 
 /* Pollard Rho algorithms */
-extern int pollardrho_serial(mpz_t result, 
-                             const EllipticCurve ec, 
-                             const Point* P,
-                             const Point* Q, 
-                             void (*iteration)(const EllipticCurve ec,
-                                               mpz_t c,
-                                               mpz_t d,
-                                               Point* X,
-                                               const Triple* branches,
-                                               const unsigned long i));
+extern BigInt pollardrho_serial(const EllipticCurve ec, 
+                                const Point* P,
+                                const Point* Q, 
+                                void (*iteration)(const EllipticCurve ec,
+                                                  BigInt* c,
+                                                  BigInt* d,
+                                                  Point* X,
+                                                  const Triple* branches,
+                                                  const unsigned long i));
 
-extern int pollardrho_parallel_fork(mpz_t result,
-                                    const EllipticCurve ec,
-                                    const Point* P,
-                                    const Point* Q,
-                                    void (*iteration)(const EllipticCurve ec,
-                                                      mpz_t c,
-                                                      mpz_t d,
-                                                      Point* X,
-                                                      const Triple* branches,
-                                                      const unsigned long i));
+extern BigInt pollardrho_parallel_fork(const EllipticCurve ec,
+                                       const Point* P,
+                                       const Point* Q,
+                                       void (*iteration)(const EllipticCurve ec,
+                                                         BigInt* c,
+                                                         BigInt* d,
+                                                         Point* X,
+                                                         const Triple* branches,
+                                                         const unsigned long i));
 
 #endif
