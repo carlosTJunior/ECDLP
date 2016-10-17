@@ -22,7 +22,7 @@ extern Hashtable* hashtable_create(long size);
  * even if the triple->a and triple->b don't collide.
  */
 extern int hashtable_insert(Hashtable* hashtable, 
-                            Triple* triple,
+                            const Triple* triple,
                             Triple* c_triple);
 
 /* As Hashtable is a opaque type, it's properties cannot be accessed from

@@ -14,6 +14,16 @@ Triple* triple_create(BigInt c, BigInt d, Point point) {
     return t;
 }
 
+Triple* triple_copy(const Triple* triple) {
+    Triple* t = (Triple*) malloc(sizeof(Triple));
+
+    t->c = triple->c;
+    t->d = triple->d;
+    t->point = triple->point;
+
+    return t;
+}
+
 typedef struct list {
     Triple* data;
     struct list* next;
@@ -24,19 +34,19 @@ typedef struct chain {
 } Chain;
 
 
-int chain_insert(Chain* chain, Triple* triple) {
+int chain_insert(Chain* chain, const Triple* triple) {
     List *new_node;
     if(!chain || !triple) return -1;
 
     new_node = (List*) malloc(sizeof(List));
-    new_node->data = triple;
+    new_node->data = triple_copy(triple);
     new_node->next = chain->list;
 
     chain->list = new_node;
     return 0;
 }
 
-int chain_search(Chain* chain, Triple* triple, Triple* c_triple) {
+int chain_search(Chain* chain, const Triple* triple, Triple* c_triple) {
     List* temp;
     if (!chain || !triple) return -1;
 
@@ -86,14 +96,14 @@ long hashtable_n_elems(Hashtable* hashtable) {
 }
 
 /* Function to insert into the hashtable, returns the hashtable's n_elems or -1 on error */
-int hashtable_insert(Hashtable* hashtable, Triple* triple, Triple* c_triple) {
+int hashtable_insert(Hashtable* hashtable, const Triple* triple, Triple* c_triple) {
     long h;
     if(!hashtable || !triple || !c_triple) return -1;
 
     h = hash(triple, hashtable->size);
     if (!chain_search(&hashtable->chain[h], triple, c_triple)) {
-        printf("Inserting (%ld, %ld, (%ld, %ld)) into the hashtable position %ld\n",
-                triple->c, triple->d, triple->point.x, triple->point.y, h);
+        //printf("Inserting (%ld, %ld, (%ld, %ld)) into the hashtable position %ld\n",
+        //        triple->c, triple->d, triple->point.x, triple->point.y, h);
         chain_insert(&hashtable->chain[h], triple);
         hashtable->n_elems++;
     } else {
@@ -101,6 +111,9 @@ int hashtable_insert(Hashtable* hashtable, Triple* triple, Triple* c_triple) {
                      triple->point.x, triple->point.y);
         printf("\ta1 = %ld, b1 = %ld\n", triple->c, triple->d);
         printf("\ta2 = %ld, b2 = %ld\n", c_triple->c, c_triple->d);
+        /* return FALSE = 0 if cannot insert */
+        return 0;
     }
-    return hashtable->n_elems;
+    /* return TRUE = 1 if inserted with success */
+    return 1;
 }

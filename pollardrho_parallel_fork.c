@@ -10,7 +10,7 @@
 
 
 #define FIFO "pfifo"
-
+#define HASHTABLE_SIZE 50
 
 void client_func(const EllipticCurve ec,
                  const Point* P,
@@ -39,20 +39,20 @@ void client_func(const EllipticCurve ec,
     ecc_mul(Qtemp, ec, d, Q);
     ecc_add(X, ec, Ptemp, Qtemp); /* X = cP + dQ */
 
-    /* OBS: danger to open fifo here */
+    /* OBS: danger to open fifo here (parallel zone) */
     if( (ffd = open(FIFO, O_WRONLY)) == -1 ) {
         fprintf(stderr, "Error: cannot open FIFO for writing\n");
         exit(1);
     }
-    printf("Client: FIFO opened\n");
+    //printf("Client: FIFO opened\n");
 
-    for (i = 0; i < 100; i++) {
+    for (i = 0; i < 100; i++) { /* change condition to a signal */
         int j = partition_function(X);
         (*iteration)(ec, &c, &d, X, branches, j);
 
-        if ( X->x < 100 ) {
-            printf("Client write to fifo:");
-            printf("(%ld, %ld, (%ld, %ld))\n", c, d, X->x, X->y);
+        if ( X->x < 100 ) { /* change condition to distinguished point function */
+            //printf("Client write to fifo:");
+            //printf("(%ld, %ld, (%ld, %ld))\n", c, d, X->x, X->y);
             Triple t;
             t.c = c;
             t.d = d;
@@ -61,7 +61,7 @@ void client_func(const EllipticCurve ec,
         }
     }
 
-    printf("Client: closing FIFO\n");
+    //printf("Client: closing FIFO\n");
     close(ffd);
     /* END - parallel */
 
@@ -82,6 +82,7 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
 {
     int i;
     Triple branches[L];
+    BigInt result = 0;
 
     if (mkfifo(FIFO, S_IRUSR | S_IWUSR | S_IWGRP) == -1 
             && errno != EEXIST) {
@@ -101,24 +102,27 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
         default:
             ;
             int ffd;
-            Triple t; 
+            Triple t, ct; 
+            Hashtable* htable;
+            htable = hashtable_create(HASHTABLE_SIZE);
 
             if( (ffd = open(FIFO, O_RDONLY)) == -1 ) {
                 fprintf(stderr, "Error: cannot open FIFO for writing\n");
                 exit(1);
             }
-            printf("Server: FIFO opened\n");
+            //printf("Server: FIFO opened\n");
 
             while( read(ffd, &t, sizeof(Triple)) > 0 ) {
-                printf("SERVER READ: ");
-                printf("(%ld, %ld, (%ld, %ld))\n", t.c, t.d,
-                        t.point.x, t.point.y);
+                //printf("SERVER READ: ");
+                //printf("(%ld, %ld, (%ld, %ld))\n", t.c, t.d,
+                //        t.point.x, t.point.y);
+                if( !hashtable_insert(htable, &t, &ct) ) break;
             }
             close(ffd);
-            printf("Server: FIFO closed\n");
+            //printf("Server: FIFO closed\n");
+            result = calculate_result(t.c, ct.c, t.d, ct.d, ec.order);
     }
+    /* Kill child process before return */
 
-    //calculate_result(result, c1, c2, d1, d2, ec.order);
-    
-    return 0;
+    return result;
 }
