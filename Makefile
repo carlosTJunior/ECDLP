@@ -2,7 +2,11 @@ CC = gcc
 
 MAIN = main.c
 
-OBJ = pollardrho.c point.c ecc.c pollardrho_serial.c \
+OBJ = pollardrho.c \
+      point.c \
+	  ecc.c \
+	  pollardrho_serial.c \
+	  pollardrho_parallel_fork.c \
 	  hashtable.c 
 
 TEST_DIR = tests

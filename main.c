@@ -56,11 +56,9 @@ int main(int argc, char* argv[])
                 pollard_algorithm = pollardrho_serial;
             }
             /* parallel using fork */
-            /*
             else if(strcmp(optarg, "fork") == 0) {
                 pollard_algorithm = pollardrho_parallel_fork;
             }
-            */
             break;
 
         default:
