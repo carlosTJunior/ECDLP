@@ -6,19 +6,38 @@
 #include "point.h"
 
 typedef struct _ecc {
-    mpz_t p;
-    mpz_t a;
-    mpz_t b;
-    mpz_t order;
+    BigInt p;
+    BigInt a;
+    BigInt b;
+    BigInt order;
 } EllipticCurve;
 
-extern EllipticCurve ecc_create(const char*, const char*, const char*,\
-       const char*);
+extern EllipticCurve ecc_create(const BigInt p, 
+                                const BigInt a, 
+                                const BigInt b,
+                                const BigInt order);
 
-extern void ecc_description(const EllipticCurve);
-extern int ecc_add(Point*, const EllipticCurve, const Point*, const Point*);
-extern int ecc_mul(Point*, const EllipticCurve, const mpz_t, const Point*);
-extern int ecc_halving(Point*, const EllipticCurve, const Point*);
-extern int _lambda(mpz_t, const EllipticCurve, const Point*, const Point*);
+extern void ecc_description(const EllipticCurve ec);
+
+extern int ecc_add(Point* R,
+                   const EllipticCurve ec,
+                   const Point* P, 
+                   const Point* Q);
+
+extern int ecc_mul(Point* R, 
+                   const EllipticCurve ec, 
+                   const BigInt, 
+                   const Point* P);
+
+extern int ecc_halving(Point* R,
+                       const EllipticCurve ec,
+                       const Point* P);
+
+
+extern BigInt _lambda(const EllipticCurve ec, 
+                      const Point* P, 
+                      const Point* Q);
+
+extern BigInt modInverse(BigInt a, BigInt m);
 
 #endif
