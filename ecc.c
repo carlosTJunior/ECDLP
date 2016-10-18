@@ -18,7 +18,7 @@ ecc_create(const BigInt p, const BigInt a, const BigInt b, const BigInt order)
 
 void ecc_description(const EllipticCurve ec)
 {
-    printf("E(F_%ld): y^2 = x^3 + %ldx + %ld, #E(F_%ld) = %ld\n", 
+    printf("E(F_%lld): y^2 = x^3 + %lldx + %lld, #E(F_%lld) = %lld\n", 
             ec.p, ec.a, ec.b, ec.p, ec.order);
 }
 

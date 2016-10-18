@@ -13,6 +13,7 @@ TEST_DIR = tests
 
 OBJ_TESTS = $(TEST_DIR)/testECC.c \
 			$(TEST_DIR)/testPoint.c \
+			$(TEST_DIR)/testPollard.c \
 			$(TEST_DIR)/unittests.c \
 
 LIBS = -W -g

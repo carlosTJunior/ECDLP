@@ -102,15 +102,15 @@ int hashtable_insert(Hashtable* hashtable, const Triple* triple, Triple* c_tripl
 
     h = hash(triple, hashtable->size);
     if (!chain_search(&hashtable->chain[h], triple, c_triple)) {
-        //printf("Inserting (%ld, %ld, (%ld, %ld)) into the hashtable position %ld\n",
+        //printf("Inserting (%lld, %lld, (%lld, %lld)) into the hashtable position %lld\n",
         //        triple->c, triple->d, triple->point.x, triple->point.y, h);
         chain_insert(&hashtable->chain[h], triple);
         hashtable->n_elems++;
     } else {
-        printf("Collision found in point (%ld, %ld)\n",
+        printf("Collision found in point (%lld, %lld)\n",
                      triple->point.x, triple->point.y);
-        printf("\ta1 = %ld, b1 = %ld\n", triple->c, triple->d);
-        printf("\ta2 = %ld, b2 = %ld\n", c_triple->c, c_triple->d);
+        printf("\ta1 = %lld, b1 = %lld\n", triple->c, triple->d);
+        printf("\ta2 = %lld, b2 = %lld\n", c_triple->c, c_triple->d);
         /* return FALSE = 0 if cannot insert */
         return 0;
     }

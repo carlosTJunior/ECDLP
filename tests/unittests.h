@@ -11,5 +11,6 @@ int numTests;
 
 extern void run_point_tests();
 extern void run_ecc_tests();
+extern void run_pollardrho_tests();
 
 #endif

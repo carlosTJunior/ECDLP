@@ -82,3 +82,17 @@ void r_adding_walk(const EllipticCurve ec,
     *d = (*d + branches[j].d) % ec.order;
     ecc_add(X, ec, X, &branches[j].point);
 }
+
+BigInt count_1bits(BigInt x)
+{
+    x = x - ((x >> 1) & 0x5555555555555555);
+    x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333);
+    x = x + (x >> 8);
+    x = x + (x >> 16);
+    return x & 0x000000000000003F;
+}
+
+BigInt count_0bits(BigInt x)
+{
+    return 32 - count_1bits(x);
+}

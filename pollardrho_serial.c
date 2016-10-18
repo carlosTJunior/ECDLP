@@ -49,14 +49,15 @@ BigInt pollardrho_serial(const EllipticCurve ec,
             j = partition_function(X2);
             (*iteration)(ec, &c2, &d2, X2, branches, j);
         }
+        printf("(%lld, %lld), (%lld, %lld)\n", X1->x, X1->y, X2->x, X2->y);
         if(point_is_equal(X1, X2))
         {
             printf("---------------------------------------------\n");
             printf("Collision found at point\n");
-            printf("X1(%ld, %ld) X2(%ld, %ld)\n", 
+            printf("X1(%lld, %lld) X2(%lld, %lld)\n", 
                     X1->x, X1->y, X2->x, X2->y);
             printf("With values \n");
-            printf("c1 = %ld, d1 = %ld and c2 = %ld, d2 = %ld\n", \
+            printf("c1 = %lld, d1 = %lld and c2 = %lld, d2 = %lld\n", \
                     c1, d1, c2, d2);
             has_collided = 1;
         }

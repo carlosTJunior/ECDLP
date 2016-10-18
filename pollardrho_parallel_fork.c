@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <signal.h>
 
 #include "pollardrho.h"
 
@@ -44,13 +45,14 @@ void client_func(const EllipticCurve ec,
         fprintf(stderr, "Error: cannot open FIFO for writing\n");
         exit(1);
     }
-    //printf("Client: FIFO opened\n");
+    printf("Client: FIFO opened\n");
 
-    for (i = 0; i < 100; i++) { /* change condition to a signal */
+    for (;;) {
         int j = partition_function(X);
         (*iteration)(ec, &c, &d, X, branches, j);
 
-        if ( X->x < 100 ) { /* change condition to distinguished point function */
+        //if ( X->x != -1 && count_0bits(X->x) > 40) { /* change condition to distinguished point function */
+        if ( X->x != -1 && X->x < 50) { /* change condition to distinguished point function */
             //printf("Client write to fifo:");
             //printf("(%ld, %ld, (%ld, %ld))\n", c, d, X->x, X->y);
             Triple t;
@@ -61,7 +63,7 @@ void client_func(const EllipticCurve ec,
         }
     }
 
-    //printf("Client: closing FIFO\n");
+    printf("Client: closing FIFO\n");
     close(ffd);
     /* END - parallel */
 
@@ -83,6 +85,7 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
     int i;
     Triple branches[L];
     BigInt result = 0;
+    int chldPid;
 
     if (mkfifo(FIFO, S_IRUSR | S_IWUSR | S_IWGRP) == -1 
             && errno != EEXIST) {
@@ -90,7 +93,7 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
         exit(1);
     }
 
-    switch( fork() ) {
+    switch( chldPid = fork() ) {
         case -1:
             fprintf(stderr, "Error: fork\n");
             exit(1);
@@ -110,19 +113,22 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
                 fprintf(stderr, "Error: cannot open FIFO for writing\n");
                 exit(1);
             }
-            //printf("Server: FIFO opened\n");
+            printf("Server: FIFO opened\n");
 
             while( read(ffd, &t, sizeof(Triple)) > 0 ) {
                 //printf("SERVER READ: ");
                 //printf("(%ld, %ld, (%ld, %ld))\n", t.c, t.d,
                 //        t.point.x, t.point.y);
-                if( !hashtable_insert(htable, &t, &ct) ) break;
+                if( !hashtable_insert(htable, &t, &ct) ) {
+                    /* Kill child process before return */
+                    kill(chldPid, SIGTERM);
+                    break;
+                }
             }
             close(ffd);
-            //printf("Server: FIFO closed\n");
+            printf("Server: FIFO closed\n");
             result = calculate_result(t.c, ct.c, t.d, ct.d, ec.order);
     }
-    /* Kill child process before return */
 
     return result;
 }

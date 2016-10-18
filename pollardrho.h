@@ -56,4 +56,6 @@ extern BigInt pollardrho_parallel_fork(const EllipticCurve ec,
                                                          const Triple* branches,
                                                          const unsigned long i));
 
+extern BigInt count_0bits(BigInt x);
+
 #endif

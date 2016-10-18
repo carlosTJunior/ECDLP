@@ -3,7 +3,7 @@
 
 //#include <gmp.h>
 
-#define BigInt long
+#define BigInt long long
 
 typedef struct _point {
     BigInt x;

@@ -73,6 +73,7 @@ int main(int argc, char* argv[])
     init_random_number_generator();
 
     /*------------------------------ setting Curves and ECDLP Points -----------------------------*/
+    /*
     EllipticCurve ec = ecc_create(229, 1, 44, 239);
     ecc_description(ec);
     Point *P = point_alloc();
@@ -80,24 +81,34 @@ int main(int argc, char* argv[])
     Point *Q = point_alloc();
     point_init(Q, 155, 166);
 
-    /*
-    EllipticCurve ec = ecc_create("69234577397554139",\
-            "64326",\
-            "11751",\
-            "69234577237507391");
+    EllipticCurve ec = ecc_create(69234577397554139,
+                                  64326,
+                                  11751,
+                                  69234577237507391);
     ecc_description(ec);
     Point *P = point_alloc();
-    point_init(P, "39361571180675947", "7991682211253487");
+    point_init(P, 39361571180675947, 7991682211253487);
     Point *Q = point_alloc();
-    point_init(Q, "51992249945632156", "48952372232107871");
+    point_init(Q, 51992249945632156, 48952372232107871);
     */
+
+    EllipticCurve ec = ecc_create(2879867477,
+                                  62293,
+                                  47905,
+                                  2879882063);
+    ecc_description(ec);
+    Point *P = point_alloc();
+    point_init(P, 1482193291, 1063050205);
+    Point *Q = point_alloc();
+    point_init(Q, 2146105060, 1451020666);
+
     /*-------------------------------- Curves and Points ending setting ---------------------------*/
 
     BigInt result;
 
     result = (*pollard_algorithm)(ec, P, Q, iteration_function);
 
-    printf("Result is %ld\n", result);
+    printf("Result is %lld\n", result);
     point_destroy(P);
     point_destroy(Q);
 
