@@ -49,7 +49,7 @@ BigInt pollardrho_serial(const EllipticCurve ec,
             j = partition_function(X2);
             (*iteration)(ec, &c2, &d2, X2, branches, j);
         }
-        printf("(%lld, %lld), (%lld, %lld)\n", X1->x, X1->y, X2->x, X2->y);
+        //printf("(%lld, %lld), (%lld, %lld)\n", X1->x, X1->y, X2->x, X2->y);
         if(point_is_equal(X1, X2))
         {
             printf("---------------------------------------------\n");

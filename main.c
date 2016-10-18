@@ -102,6 +102,17 @@ int main(int argc, char* argv[])
     Point *Q = point_alloc();
     point_init(Q, 2146105060, 1451020666);
 
+    /*
+    EllipticCurve ec = ecc_create(7919,
+                                  1001,
+                                  75,
+                                  7889);
+    ecc_description(ec);
+    Point *P = point_alloc();
+    point_init(P, 4023, 6036);
+    Point *Q = point_alloc();
+    point_init(Q, 4135, 3169);
+    */
     /*-------------------------------- Curves and Points ending setting ---------------------------*/
 
     BigInt result;
