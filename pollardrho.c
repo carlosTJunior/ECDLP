@@ -30,16 +30,20 @@ BigInt calculate_result(const BigInt c1, const BigInt c2, \
 }
 
 /* this function returns P.x % L */
+/* Pay attention to the point at infinity, which is represented by (-1, -1) */
 BigInt partition_function(const Point* P) {
     BigInt result;
     result = P->x % L;
+
+    /* add L to result if P->x == -1 */
+    if(result < 0) result += L;
     return result;
 }
 
 BigInt random_number(const BigInt max)
 {
     /* OBS: rand() returns integer not long */
-    return (BigInt) rand() % max;
+    return (BigInt) rand() % max + 1;
 }
 
 int init_branches(Triple *branches,

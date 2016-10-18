@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "pollardrho.h"
 
 BigInt pollardrho_serial(const EllipticCurve ec, 
@@ -38,8 +40,8 @@ BigInt pollardrho_serial(const EllipticCurve ec,
 
     int has_collided = 0;
     unsigned long j;
+
     while(!has_collided) {
-        //gmp_printf("X1(%Zd, %Zd)\t", X1->x, X1->y);
         j = partition_function(X1);
         (*iteration)(ec, &c1, &d1, X1, branches, j);
 
@@ -47,7 +49,6 @@ BigInt pollardrho_serial(const EllipticCurve ec,
             j = partition_function(X2);
             (*iteration)(ec, &c2, &d2, X2, branches, j);
         }
-        //gmp_printf("X2(%Zd, %Zd)\n", X2->x, X2->y);
         if(point_is_equal(X1, X2))
         {
             printf("---------------------------------------------\n");

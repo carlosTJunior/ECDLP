@@ -8,13 +8,7 @@
 void init_random_number_generator()
 {
     srand(time(NULL));
-    int seed = rand();
-
-    /* This state is a global variable declared in pollardrho.h */
-    /*
-    gmp_randinit_mt(state);
-    gmp_randseed_ui(state, seed);
-    */
+    int seed = rand() + 1;
 }
 
 int main(int argc, char* argv[])
@@ -77,6 +71,8 @@ int main(int argc, char* argv[])
     }
 
     init_random_number_generator();
+
+    /*------------------------------ setting Curves and ECDLP Points -----------------------------*/
     EllipticCurve ec = ecc_create(229, 1, 44, 239);
     ecc_description(ec);
     Point *P = point_alloc();
@@ -95,16 +91,15 @@ int main(int argc, char* argv[])
     Point *Q = point_alloc();
     point_init(Q, "51992249945632156", "48952372232107871");
     */
+    /*-------------------------------- Curves and Points ending setting ---------------------------*/
 
     BigInt result;
 
     result = (*pollard_algorithm)(ec, P, Q, iteration_function);
 
     printf("Result is %ld\n", result);
-    //gmp_randclear(state);
     point_destroy(P);
     point_destroy(Q);
-    //point_destroy(R);
 
     return 0;
 }

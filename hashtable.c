@@ -4,7 +4,7 @@
 #include "hashtable.h"
 
 
-Triple* triple_create(BigInt c, BigInt d, Point point) {
+Triple* triple_create(const BigInt c, const BigInt d, const Point point) {
     Triple* t = (Triple*) malloc(sizeof(Triple));
 
     t->c = c;
@@ -46,7 +46,7 @@ int chain_insert(Chain* chain, const Triple* triple) {
     return 0;
 }
 
-int chain_search(Chain* chain, const Triple* triple, Triple* c_triple) {
+int chain_search(const Chain* chain, const Triple* triple, Triple* c_triple) {
     List* temp;
     if (!chain || !triple) return -1;
 
@@ -78,7 +78,7 @@ long hash (const Triple* triple, unsigned long size) {
     return triple->point.x % size;
 }
 
-Hashtable* hashtable_create(long size) {
+Hashtable* hashtable_create(const long size) {
     Hashtable* table = (Hashtable*) malloc(sizeof(Hashtable));
     table->size = size;
     table->n_elems = 0;
@@ -87,11 +87,11 @@ Hashtable* hashtable_create(long size) {
     return table;
 }
 
-long hashtable_size(Hashtable* hashtable) {
+long hashtable_size(const Hashtable* hashtable) {
     return hashtable->size;
 }
 
-long hashtable_n_elems(Hashtable* hashtable) {
+long hashtable_n_elems(const Hashtable* hashtable) {
     return hashtable->n_elems;
 }
 

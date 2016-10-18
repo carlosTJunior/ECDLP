@@ -7,7 +7,7 @@
 
 /* global vars */
 EllipticCurve ec;
-Point *P, *Q;
+Point *P, *Q, *Inf;
 
 void testEccCreate() {
     printf("testEccCreate ");
@@ -21,8 +21,8 @@ void testEccCreate() {
     assert(ec.order == 28);
 }
 
-void testEccAdd() {
-    printf("testEccAdd ");
+void testEccAdd1() {
+    printf("testEccAdd1 ");
 
     Point *R;
     R = point_alloc();
@@ -31,6 +31,34 @@ void testEccAdd() {
 
     assert(R->x == 17);
     assert(R->y == 20);
+
+    point_destroy(R);
+}
+
+void testEccAdd2() {
+    printf("testEccAdd2 ");
+
+    Point *R;
+    R = point_alloc();
+
+    ecc_add(R, ec, P, Inf);
+
+    assert(R->x == P->x);
+    assert(R->y == P->y);
+
+    point_destroy(R);
+}
+
+void testEccAdd3() {
+    printf("testEccAdd3 ");
+
+    Point *R;
+    R = point_alloc();
+
+    ecc_add(R, ec, Inf, Q);
+
+    assert(R->x == Q->x);
+    assert(R->y == Q->y);
 
     point_destroy(R);
 }
@@ -81,13 +109,17 @@ void init_vars() {
     ec = ecc_create(23, 1, 1, 28);
     P = point_alloc();
     Q = point_alloc();
+    Inf = point_alloc();
     point_init(P, 3, 10);
     point_init(Q, 9, 7);
+    point_init(Inf, -1, -1);
 }
 
 test_func ecc_functions[] = { 
     testEccCreate,
-    testEccAdd,
+    testEccAdd1,
+    testEccAdd2,
+    testEccAdd3,
     testEccMul1,
     testEccMul2,
     testEccMul3,

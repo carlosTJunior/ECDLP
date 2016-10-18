@@ -76,11 +76,9 @@ int _sumWithInfinityPoint(Point *R, const Point* P, const Point* Q)
 
     /* if P is point at infinity, then R = Q, else R = P */
     if(P->x == -1) {
-        R->x = Q->x;
-        R->y = Q->y;
+        point_copy(R, Q);
     } else {
-        R->x = P->x;
-        R->y = P->y;
+        point_copy(R, P);
     }
     return 0;
 }

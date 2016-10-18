@@ -12,8 +12,11 @@ typedef struct triple {
 } Triple;
 
 /* creation functions */
-extern Triple* triple_create(BigInt c, BigInt d, Point point);
-extern Hashtable* hashtable_create(long size);
+extern Triple* triple_create(const BigInt c,
+                             const BigInt d, 
+                             const Point point);
+
+extern Hashtable* hashtable_create(const long size);
 
 /* Insert a triple into the hashtable. 
  * If triple already exists into the table, it will not be inserted.
@@ -28,7 +31,7 @@ extern int hashtable_insert(Hashtable* hashtable,
 /* As Hashtable is a opaque type, it's properties cannot be accessed from
  * outside the hashtable.c file. So, it's necessary to create functions to
  * access this properties */
-extern long hashtable_size(Hashtable* hashtable);
-extern long hashtable_n_elems(Hashtable* hashtable);
+extern long hashtable_size(const Hashtable* hashtable);
+extern long hashtable_n_elems(const Hashtable* hashtable);
 
 #endif
