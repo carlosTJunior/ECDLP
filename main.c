@@ -73,7 +73,6 @@ int main(int argc, char* argv[])
     init_random_number_generator();
 
     /*------------------------------ setting Curves and ECDLP Points -----------------------------*/
-    /*
     EllipticCurve ec = ecc_create(229, 1, 44, 239);
     ecc_description(ec);
     Point *P = point_alloc();
@@ -81,6 +80,7 @@ int main(int argc, char* argv[])
     Point *Q = point_alloc();
     point_init(Q, 155, 166);
 
+    /*
     EllipticCurve ec = ecc_create(69234577397554139,
                                   64326,
                                   11751,
@@ -90,7 +90,6 @@ int main(int argc, char* argv[])
     point_init(P, 39361571180675947, 7991682211253487);
     Point *Q = point_alloc();
     point_init(Q, 51992249945632156, 48952372232107871);
-    */
 
     EllipticCurve ec = ecc_create(2879867477,
                                   62293,
@@ -102,7 +101,6 @@ int main(int argc, char* argv[])
     Point *Q = point_alloc();
     point_init(Q, 2146105060, 1451020666);
 
-    /*
     EllipticCurve ec = ecc_create(7919,
                                   1001,
                                   75,
