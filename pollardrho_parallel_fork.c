@@ -53,7 +53,7 @@ void client_func(const EllipticCurve ec,
         printf("Client running (%lld, %lld)\n", X->x, X->y);
 
         //if ( X->x != -1 && count_0bits(X->x) > 40) { /* change condition to distinguished point function */
-        if ( X->x != -1 && X->x > 100 && X->x < 200) { /* change condition to distinguished point function */
+        if ( X->x != -1 && X->x < 200) { /* change condition to distinguished point function */
             //printf("Client write to fifo:");
             //printf("(%ld, %ld, (%ld, %ld))\n", c, d, X->x, X->y);
             Triple t;
