@@ -53,6 +53,10 @@ int main(int argc, char* argv[])
             else if(strcmp(optarg, "fork") == 0) {
                 pollard_algorithm = pollardrho_parallel_fork;
             }
+            /* parallel using MPI */
+            else if(strcmp(optarg, "mpi") == 0) {
+                pollard_algorithm = pollardrho_parallel_mpi;
+            }
             break;
 
         default:
