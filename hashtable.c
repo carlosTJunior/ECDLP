@@ -87,15 +87,15 @@ Hashtable* hashtable_create(const long size) {
     return table;
 }
 
-long hashtable_size(const Hashtable* hashtable) {
+BigInt hashtable_size(const Hashtable* hashtable) {
     return hashtable->size;
 }
 
-long hashtable_n_elems(const Hashtable* hashtable) {
+BigInt hashtable_n_elems(const Hashtable* hashtable) {
     return hashtable->n_elems;
 }
 
-/* Function to insert into the hashtable, returns the hashtable's n_elems or -1 on error */
+/* Function to insert into the hashtable */
 int hashtable_insert(Hashtable* hashtable, const Triple* triple, Triple* c_triple) {
     long h;
     if(!hashtable || !triple || !c_triple) return -1;

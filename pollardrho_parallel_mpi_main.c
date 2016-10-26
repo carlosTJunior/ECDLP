@@ -12,7 +12,7 @@ void client(int rank);
 void server(int rank, int size);
 
 int main(int argc, char** argv) {
-    srand(time(NULL));
+    srandom(time(NULL));
     MPI_Init(&argc, &argv);
 
     /*
@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
             //(*iteration)(ec, &c, &d, X, branches, j);
             r_adding_walk(ec, &c, &d, X, branches, j);
 
-            if ( X->x != -1 && X->x < 200) {
+            if ( isDistinguished(X) ) {
                 Triple t;
                 t.c = c;
                 t.d = d;
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
                 MPI_Send(&t, 1, MPI_Triple_type, 0, 0, MPI_COMM_WORLD);
             }
         }
-        printf("----- Client %d finishing execution ------\n", rank);
+        //printf("----- Client %d finishing execution ------\n", rank);
 
         point_destroy(Ptemp);
         point_destroy(Qtemp);

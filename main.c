@@ -3,12 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "pollardrho.h"
+#include "mersenne_twister.h"
 
 void init_random_number_generator()
 {
-    srand(time(NULL));
-    int seed = rand() + 1;
+    //srandom(time(NULL));
+    //int seed = random() + 1;
+    long long init[4]={0x12345LL, 0x23456LL, 0x34567LL, 0x45678LL}, length=4;
+    init_by_array64(init, length);
 }
 
 int main(int argc, char* argv[])
@@ -77,6 +81,7 @@ int main(int argc, char* argv[])
     init_random_number_generator();
 
     /*------------------------------ setting Curves and ECDLP Points -----------------------------*/
+    /*
     EllipticCurve ec = ecc_create(229, 1, 44, 239);
     ecc_description(ec);
     Point *P = point_alloc();
@@ -84,7 +89,6 @@ int main(int argc, char* argv[])
     Point *Q = point_alloc();
     point_init(Q, 155, 166);
 
-    /*
     EllipticCurve ec = ecc_create(69234577397554139,
                                   64326,
                                   11751,
@@ -105,6 +109,7 @@ int main(int argc, char* argv[])
     Point *Q = point_alloc();
     point_init(Q, 2146105060, 1451020666);
 
+    */
     EllipticCurve ec = ecc_create(7919,
                                   1001,
                                   75,
@@ -114,10 +119,9 @@ int main(int argc, char* argv[])
     point_init(P, 4023, 6036);
     Point *Q = point_alloc();
     point_init(Q, 4135, 3169);
-    */
     /*-------------------------------- Curves and Points ending setting ---------------------------*/
 
-    BigInt result;
+    BigInt result = 0;
 
     result = (*pollard_algorithm)(ec, P, Q, iteration_function);
 

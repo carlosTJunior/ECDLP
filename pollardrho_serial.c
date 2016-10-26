@@ -31,15 +31,22 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     c2 = c1;
     d2 = d1;
 
+    //printf("c = %lld, d = %lld\n", c1, d1);
+
     Point* Ptemp = point_alloc(); /* cP */
     ecc_mul(Ptemp, ec, c1, P);
+    //printf("Ptemp(%lld, %lld)\n", Ptemp->x, Ptemp->y);
     Point* Qtemp = point_alloc(); /* dQ */
     ecc_mul(Qtemp, ec, d1, Q);
+    //printf("Qtemp(%lld, %lld)\n", Qtemp->x, Qtemp->y);
     ecc_add(X1, ec, Ptemp, Qtemp); /* X1 = cP + dQ */
     ecc_add(X2, ec, Ptemp, Qtemp); /* X2 = X1 */
 
+    //printf("Ptemp + Qtemp = (%lld, %lld)\n", X1->x, X1->y);
+
     int has_collided = 0;
     unsigned long j;
+    //int first = 0;
 
     while(!has_collided) {
         j = partition_function(X1);
@@ -49,7 +56,10 @@ BigInt pollardrho_serial(const EllipticCurve ec,
             j = partition_function(X2);
             (*iteration)(ec, &c2, &d2, X2, branches, j);
         }
-        //printf("(%lld, %lld), (%lld, %lld)\n", X1->x, X1->y, X2->x, X2->y);
+        //if(first == 0) {
+        //    printf("(%lld, %lld), (%lld, %lld)\n", X1->x, X1->y, X2->x, X2->y);
+        //    first = 1;
+        //}
         if(point_is_equal(X1, X2))
         {
             printf("---------------------------------------------\n");

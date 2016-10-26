@@ -34,7 +34,7 @@ int ecc_add(Point *R, const EllipticCurve ec, const Point* P, const Point* Q)
         return 0;
     }
 
-    /* if P are the inverse of Q in the elliptic curve */
+    /* if P is the inverse of Q in the elliptic curve */
     if(P->x == Q->x) {
         /* if P->x == Q->x and P->y == 0, then this point has no inverse */
         if(P->y == 0) {
@@ -94,22 +94,22 @@ int ecc_mul(Point* R, const EllipticCurve ec, const BigInt n, const Point* P)
     BigInt num; /* copy of n */
     num = n;
 
-    if(num % 2 == 0) { /* n is even */
-        point_at_infinity(R);
-    } else {
+    if(num & 1) { /* n is odd */
         point_copy(R, P);
+    } else {
+        point_at_infinity(R);
     }
-    num /= 2;
+    num >>= 1;
     while(num != 0)
     {
         ecc_add(tempQ, ec, tempQ, tempQ);
 
-        if(num % 2 != 0)
+        if(num & 1)
         {
             ecc_add(R, ec, R, tempQ);
         }
         /* integer division of n by 2 */
-        num /= 2;
+        num >>= 1;
     }
     
     /* free space */

@@ -3,6 +3,7 @@
 
 #include "ecc.h"
 #include "hashtable.h"
+#include "mersenne_twister.h"
 
 /* number of branches */
 #define L 32
@@ -66,6 +67,7 @@ extern BigInt pollardrho_parallel_mpi(const EllipticCurve ec,
                                                         const Triple* branches,
                                                         const unsigned long i));
 
-extern BigInt count_0bits(BigInt x);
+extern int isDistinguished(Point* P);
+extern BigInt count_1bits(BigInt x);
 
 #endif

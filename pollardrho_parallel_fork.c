@@ -11,7 +11,8 @@
 
 
 #define FIFO "pfifo"
-#define HASHTABLE_SIZE 50
+#define HASHTABLE_SIZE 50000
+
 
 void client_func(const EllipticCurve ec,
                  const Point* P,
@@ -28,6 +29,13 @@ void client_func(const EllipticCurve ec,
     BigInt c, d;
     init_branches(branches, ec, P, Q);
 
+    /* Open FIFO to process - will be shared by threads */
+    if( (ffd = open(FIFO, O_WRONLY)) == -1 ) {
+        fprintf(stderr, "Error: cannot open FIFO for writing\n");
+        exit(1);
+    }
+    //printf("Client: FIFO opened\n");
+
     /* BEGIN - parallel */
     Point *X = point_alloc();
 
@@ -40,35 +48,25 @@ void client_func(const EllipticCurve ec,
     ecc_mul(Qtemp, ec, d, Q);
     ecc_add(X, ec, Ptemp, Qtemp); /* X = cP + dQ */
 
-    /* OBS: danger to open fifo here (parallel zone) */
-    if( (ffd = open(FIFO, O_WRONLY)) == -1 ) {
-        fprintf(stderr, "Error: cannot open FIFO for writing\n");
-        exit(1);
-    }
-    printf("Client: FIFO opened\n");
-
     for (;;) {
         int j = partition_function(X);
         (*iteration)(ec, &c, &d, X, branches, j);
-        printf("Client running (%lld, %lld)\n", X->x, X->y);
+        //printf("Client running (%lld, %lld)\n", X->x, X->y);
 
-        //if ( X->x != -1 && count_0bits(X->x) > 40) { /* change condition to distinguished point function */
-        if ( X->x != -1 && X->x < 200) { /* change condition to distinguished point function */
-            //printf("Client write to fifo:");
-            //printf("(%ld, %ld, (%ld, %ld))\n", c, d, X->x, X->y);
+        if ( isDistinguished(X) ) {
             Triple t;
             t.c = c;
             t.d = d;
-            //t.point = *X;
             point_copy(&t.point, X);
-            if(write(ffd, &t, 4 * sizeof(BigInt)) > 0)
-                printf("Client writes to FIFO\n");
-            else printf("Client CANNOT write to FIFO\n");
+            if(write(ffd, &t, 4 * sizeof(BigInt)) > 0) {
+                //printf("Client writes to FIFO\n");
+            }
+            //else printf("Client CANNOT write to FIFO\n");
         }
         //sleep(1);
     }
 
-    printf("Client: closing FIFO\n");
+    //printf("Client: closing FIFO\n");
     close(ffd);
     /* END - parallel */
 
@@ -103,11 +101,11 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
             fprintf(stderr, "Error: fork\n");
             exit(1);
 
-        case 0:
+        case 0: /* Client which generates points */
             client_func(ec, P, Q, branches, iteration);
             break;
 
-        default:
+        default: /* Server which receive points */
             ;
             int ffd, numRead;
             Triple t, ct; 
@@ -118,26 +116,29 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
                 fprintf(stderr, "Error: cannot open FIFO for writing\n");
                 exit(1);
             }
-            printf("Server: FIFO opened\n");
+            //printf("Server: FIFO opened\n");
 
             int flags = fcntl(ffd, F_GETFL);
             flags |= O_NONBLOCK;
             if(fcntl(ffd, F_SETFL, flags) == -1)
                 printf("Cannot modify flags\n");
-            printf("SERVER Flags modified\n");
+            //printf("SERVER Flags modified\n");
 
             while(1) {
-                printf("Server running/ ");
+                //printf("Server running/ ");
                 numRead = read(ffd, &t, 4 * sizeof(BigInt));
                 if( numRead > 0) {
-                    printf("SERVER READ: ");
                     if( !hashtable_insert(htable, &t, &ct) ) {
                         /* Kill child process before return */
                         kill(chldPid, SIGTERM);
                         break;
+                    } else {
+                        //printf("size = %lld, n_elems = %lld\n", 
+                        //        hashtable_size(htable), 
+                        //        hashtable_n_elems(htable));
                     }
                 } else {
-                    printf("Server cannot read from fifo\n");
+                    //printf("Server cannot read from fifo\n");
                 }
                 //sleep(1);
             }

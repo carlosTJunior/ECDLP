@@ -30,5 +30,5 @@ BigInt pollardrho_parallel_mpi(const EllipticCurve ec,
 
     system(command);
 
-    return 0;
+    return (long long) 1;
 }

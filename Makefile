@@ -9,12 +9,14 @@ OBJ = pollardrho.c \
 	  pollardrho_serial.c \
 	  pollardrho_parallel_fork.c \
 	  pollardrho_parallel_mpi.c \
+	  mersenne_twister.c \
 	  hashtable.c 
 
 OBJ_MPI = pollardrho.c \
     	  point.c \
 		  ecc.c \
 		  pollardrho_parallel_mpi_main.c \
+	      mersenne_twister.c \
 		  hashtable.c 
 
 TEST_DIR = tests

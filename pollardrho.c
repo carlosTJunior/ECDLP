@@ -43,7 +43,13 @@ BigInt partition_function(const Point* P) {
 BigInt random_number(const BigInt max)
 {
     /* OBS: rand() returns integer not long */
-    return (BigInt) rand() % max + 1;
+    /*
+    BigInt number = random();
+    number <<= 32;
+    number |= random();
+    return number % max;
+    */
+    return genrand64_int64() % max;
 }
 
 int init_branches(Triple *branches,
@@ -51,8 +57,11 @@ int init_branches(Triple *branches,
                   const Point* P, 
                   const Point* Q)
 {
+    //FILE *file;
     BigInt aj, bj;
     int i;
+
+    //file = fopen("branches.txt", "w+");
     for(i = 0; i < L; i++) {
         Point* Rj = point_alloc();
         Point* Ptemp = point_alloc();
@@ -66,7 +75,9 @@ int init_branches(Triple *branches,
         branches[i].c = aj;
         branches[i].d = bj;
         branches[i].point = *Rj;
+        //fprintf(file, "%lld, %lld -> (%lld, %lld)\n", aj, bj, Rj->x, Rj->y);
     }
+    //fclose(file);
 
     return 0;
 }
@@ -83,16 +94,24 @@ void r_adding_walk(const EllipticCurve ec,
     ecc_add(X, ec, X, &branches[j].point);
 }
 
+int isDistinguished(Point* P) {
+    return P->x != -1 && count_1bits(P->x) <= 5;
+}
+
+
+/*
+ * See Hacker's Delight chapter 5
+ * This function will work to a 64bits number.
+ * For numbers greater than 64bits it should be
+ * modified
+ */
 BigInt count_1bits(BigInt x)
 {
     x = x - ((x >> 1) & 0x5555555555555555);
     x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333);
+    x = (x + (x >> 4)) & 0x0f0f0f0f0f0f0f0f;
     x = x + (x >> 8);
     x = x + (x >> 16);
-    return x & 0x000000000000003F;
-}
 
-BigInt count_0bits(BigInt x)
-{
-    return 32 - count_1bits(x);
+    return x & 0x000000000000003F;
 }

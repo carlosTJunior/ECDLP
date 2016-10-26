@@ -31,7 +31,7 @@ extern int hashtable_insert(Hashtable* hashtable,
 /* As Hashtable is a opaque type, it's properties cannot be accessed from
  * outside the hashtable.c file. So, it's necessary to create functions to
  * access this properties */
-extern long hashtable_size(const Hashtable* hashtable);
-extern long hashtable_n_elems(const Hashtable* hashtable);
+extern BigInt hashtable_size(const Hashtable* hashtable);
+extern BigInt hashtable_n_elems(const Hashtable* hashtable);
 
 #endif
