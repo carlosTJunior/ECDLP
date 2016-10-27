@@ -9,10 +9,16 @@
 
 void init_random_number_generator()
 {
-    //srandom(time(NULL));
-    //int seed = random() + 1;
+    srandom(time(NULL));
+    long long seed = random();
+    seed <<= 30;
+    seed |= random();
+    init_genrand64(seed);
+
+    /*
     long long init[4]={0x12345LL, 0x23456LL, 0x34567LL, 0x45678LL}, length=4;
     init_by_array64(init, length);
+    */
 }
 
 int main(int argc, char* argv[])

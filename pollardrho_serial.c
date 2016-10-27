@@ -42,6 +42,7 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     int has_collided = 0;
     unsigned long j;
 
+    double itime = wtc_wtime();
     while(!has_collided) {
         j = partition_function(X1);
         (*iteration)(ec, &c1, &d1, X1, branches, j);
@@ -54,14 +55,16 @@ BigInt pollardrho_serial(const EllipticCurve ec,
         {
             printf("---------------------------------------------\n");
             printf("Collision found at point\n");
-            printf("X1(%lld, %lld) X2(%lld, %lld)\n", 
-                    X1->x, X1->y, X2->x, X2->y);
+            printf("X(%lld, %lld)\n", X1->x, X1->y);
             printf("With values \n");
-            printf("c1 = %lld, d1 = %lld and c2 = %lld, d2 = %lld\n", \
+            printf("\tc1 = %lld, d1 = %lld\n\tc2 = %lld, d2 = %lld\n", \
                     c1, d1, c2, d2);
             has_collided = 1;
         }
     }
+    double ftime = wtc_wtime();
+    printf("Time to find a collision: %.9lf seconds\n", ftime - itime);
+
     result = calculate_result(c1, c2, d1, d2, ec.order);
     
     point_destroy(Ptemp);

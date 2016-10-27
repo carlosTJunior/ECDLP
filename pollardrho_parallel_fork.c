@@ -25,7 +25,7 @@ void client_func(const EllipticCurve ec,
                                    const Triple* branches,
                                    const unsigned long j))
 {
-    int ffd, i;
+    int ffd;
     BigInt c, d;
     init_branches(branches, ec, P, Q);
 
@@ -34,7 +34,6 @@ void client_func(const EllipticCurve ec,
         fprintf(stderr, "Error: cannot open FIFO for writing\n");
         exit(1);
     }
-    //printf("Client: FIFO opened\n");
 
     /* BEGIN - parallel */
     Point *X = point_alloc();
@@ -51,7 +50,6 @@ void client_func(const EllipticCurve ec,
     for (;;) {
         int j = partition_function(X);
         (*iteration)(ec, &c, &d, X, branches, j);
-        //printf("Client running (%lld, %lld)\n", X->x, X->y);
 
         if ( isDistinguished(X) ) {
             Triple t;
@@ -59,14 +57,10 @@ void client_func(const EllipticCurve ec,
             t.d = d;
             point_copy(&t.point, X);
             if(write(ffd, &t, 4 * sizeof(BigInt)) > 0) {
-                //printf("Client writes to FIFO\n");
             }
-            //else printf("Client CANNOT write to FIFO\n");
         }
-        //sleep(1);
     }
 
-    //printf("Client: closing FIFO\n");
     close(ffd);
     /* END - parallel */
 
@@ -85,7 +79,6 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
                                                   const Triple* branches,
                                                   const unsigned long i))
 {
-    int i;
     Triple branches[L];
     BigInt result = 0;
     int chldPid;
@@ -116,34 +109,24 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
                 fprintf(stderr, "Error: cannot open FIFO for writing\n");
                 exit(1);
             }
-            //printf("Server: FIFO opened\n");
 
+            /* Modify flags to use nonblocking read on fifo */
             int flags = fcntl(ffd, F_GETFL);
             flags |= O_NONBLOCK;
             if(fcntl(ffd, F_SETFL, flags) == -1)
-                printf("Cannot modify flags\n");
-            //printf("SERVER Flags modified\n");
+                fprintf(stderr, "Cannot modify flags\n");
 
             while(1) {
-                //printf("Server running/ ");
                 numRead = read(ffd, &t, 4 * sizeof(BigInt));
                 if( numRead > 0) {
                     if( !hashtable_insert(htable, &t, &ct) ) {
                         /* Kill child process before return */
                         kill(chldPid, SIGTERM);
                         break;
-                    } else {
-                        //printf("size = %lld, n_elems = %lld\n", 
-                        //        hashtable_size(htable), 
-                        //        hashtable_n_elems(htable));
                     }
-                } else {
-                    //printf("Server cannot read from fifo\n");
                 }
-                //sleep(1);
             }
             close(ffd);
-            printf("Server: FIFO closed\n");
             result = calculate_result(t.c, ct.c, t.d, ct.d, ec.order);
     }
 

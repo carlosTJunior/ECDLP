@@ -57,11 +57,9 @@ int init_branches(Triple *branches,
                   const Point* P, 
                   const Point* Q)
 {
-    //FILE *file;
     BigInt aj, bj;
     int i;
 
-    //file = fopen("branches.txt", "w+");
     for(i = 0; i < L; i++) {
         Point* Rj = point_alloc();
         Point* Ptemp = point_alloc();
@@ -75,9 +73,7 @@ int init_branches(Triple *branches,
         branches[i].c = aj;
         branches[i].d = bj;
         branches[i].point = *Rj;
-        //fprintf(file, "%lld, %lld -> (%lld, %lld)\n", aj, bj, Rj->x, Rj->y);
     }
-    //fclose(file);
 
     return 0;
 }
