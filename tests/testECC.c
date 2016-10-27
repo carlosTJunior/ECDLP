@@ -63,6 +63,26 @@ void testEccAdd3() {
     point_destroy(R);
 }
 
+/* This test will have buffer overflow for type long long */
+void testEccAdd4() {
+    printf("testEccAdd4 ");
+
+    EllipticCurve ec1;
+    ec1 = ecc_create(2879867477, 62293, 47905, 2879882063);
+    Point *R, *tempQ;
+    R = point_alloc();
+    tempQ = point_alloc();
+
+    point_init(tempQ, 2023576232, 137974030);
+    ecc_add(R, ec1, tempQ, tempQ);
+
+    assert(R->x == 991038922);
+    assert(R->y == 753333067);
+
+    point_destroy(R);
+    point_destroy(tempQ);
+}
+
 void testEccMul1() {
     printf("testEccMul1 ");
 
@@ -120,6 +140,7 @@ test_func ecc_functions[] = {
     testEccAdd1,
     testEccAdd2,
     testEccAdd3,
+    //testEccAdd4, //Buffer overflow for long long
     testEccMul1,
     testEccMul2,
     testEccMul3,

@@ -6,7 +6,7 @@
 
 #include "pollardrho.h"
 
-#define HASHTABLE_SIZE 50
+#define HASHTABLE_SIZE 50000
 
 void client(int rank);
 void server(int rank, int size);
@@ -16,7 +16,8 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
 
     /*
-     * Read argv and create ECDLP here
+     * Read argv and create ECDLP here.
+     * mpiexec -n 4 ./mpiprog ec.p ec.a ec.b ec.order P.x P.y Q.x Q.y
      */
     EllipticCurve ec;
     Point *P, *Q;
@@ -28,7 +29,6 @@ int main(int argc, char** argv) {
     ec.a = atol(argv[2]);
     ec.b = atol(argv[3]);
     ec.order = atol(argv[4]);
-
 
     P = point_alloc();
     Q = point_alloc();
@@ -44,9 +44,7 @@ int main(int argc, char** argv) {
 
 
     /* 
-     * Create MPI_Triple_type here
-     * For now: with 4 long longs instead of
-     * 2 long longs for c and d and one pointer
+     * Create MPI_Triple_type for our Triple here
      */
     const int nItems = 4;
     int blocklengths[4] = {1, 1, 1, 1};
