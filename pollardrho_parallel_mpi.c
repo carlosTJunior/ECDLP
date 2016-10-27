@@ -6,6 +6,11 @@
 
 #define NUM_PROCESSES 4
 
+/*
+ * This function will call mpiexec to execute the mpiprog 
+ *
+ */
+
 BigInt pollardrho_parallel_mpi(const EllipticCurve ec, 
                                const Point* P,
                                const Point* Q, 
