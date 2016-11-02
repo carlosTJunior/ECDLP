@@ -1,20 +1,20 @@
 #ifndef _POINT
 #define _POINT
 
-//#include <gmp.h>
+#include <gmpxx.h>
 
-#define BigInt long long
+//#define BigInt long long
+#define BigInt mpz_class
 
-typedef struct _point {
+struct Point {
     BigInt x;
     BigInt y;
-} Point;
 
-extern Point* point_alloc();
-extern int point_init(Point*, const BigInt, const BigInt);
-extern int point_at_infinity(Point*);
-extern int point_is_equal(const Point*, const Point*);
-extern int point_copy(Point*, const Point*);
-extern void point_destroy(Point*);
+    Point() {}
+    ~Point() {}
+    Point(const BigInt x, const BigInt y) : x(x), y(y) {}
+    friend void point_at_infinity(Point& P);
+    friend bool operator==(const Point P, const Point Q);
+};
 
 #endif

@@ -5,53 +5,35 @@
 #include "unittests.h"
 #include "../point.h"
 
-
+/*
 void testCreateDestroyPoint() {
     printf("testCreateDestroyPoint ");
-    Point* P;
-    P = point_alloc();
-    assert(P != NULL);
-
-    point_destroy(P);
+    Point P;
+    assert(P != 0);
 }
-
+*/
 void testInitPoint() {
     printf("testInitPoint ");
-    Point* P;
-    P = point_alloc();
+    Point P(7, 23);
 
-    point_init(P, 7, 23);
-    assert(P->x == 7);
-    assert(P->y == 23);
-
-    point_destroy(P);
+    assert(P.x == 7);
+    assert(P.y == 23);
 }
 
 void testPointAtInfinity() {
     printf("testPointAtInfinity ");
-    Point* P;
-    P = point_alloc();
+    Point P;
     point_at_infinity(P);
 
-    assert(P->x == -1);
-    assert(P->y == -1);
-
-    point_destroy(P);
+    assert(P.x == -1);
+    assert(P.y == -1);
 }
-
+/*
 void testPointIsEqual() {
     printf("testPointIsEqual ");
-    Point *P, *Q;
-    P = point_alloc();
-    Q = point_alloc();
-
-    point_init(P, 5, 9);
-    point_init(Q, 5, 9);
+    Point P(5, 9), Q(5, 9);
 
     assert(point_is_equal(P, Q));
-
-    point_destroy(P);
-    point_destroy(Q);
 }
 
 void testPointCopy() {
@@ -65,17 +47,14 @@ void testPointCopy() {
 
     assert(P->x == Q->x);
     assert(P->y == Q->y);
-
-    point_destroy(P);
-    point_destroy(Q);
 }
-
+*/
 test_func point_functions[] = { 
-    testCreateDestroyPoint, 
+    //testCreateDestroyPoint, 
     testInitPoint, 
     testPointAtInfinity, 
-    testPointIsEqual,
-    testPointCopy,
+   /* testPointIsEqual,
+    testPointCopy,*/
     NULL 
 };
 
