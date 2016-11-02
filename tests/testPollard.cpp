@@ -26,8 +26,8 @@ void testPartitionFunction() {
     Point Q(671, 234);
 
     // Assume that L = 32
-    assert(partition_function(P), 17);
-    assert(partition_function(Q), 31);
+    assert(partition_function(P) == 17);
+    assert(partition_function(Q) == 31);
 }
 
 void testRandomNumber() {

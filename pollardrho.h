@@ -15,10 +15,10 @@
 /* General Pollard Rho functions */
 extern int init_branches(Triple *branches, 
                          const EllipticCurve ec,
-                         const Point* P,
-                         const Point* Q);
+                         const Point P,
+                         const Point Q);
 
-extern BigInt partition_function(const Point* P);
+extern BigInt partition_function(const Point P);
 
 extern BigInt random_number(const BigInt max);
 

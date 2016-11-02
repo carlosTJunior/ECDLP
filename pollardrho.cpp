@@ -5,13 +5,16 @@
 /* Global state to generate random numbers */
 //gmp_randstate_t state;
 
-BigInt calculate_result(const BigInt c1, const BigInt c2, \
-        const BigInt d1, const BigInt d2, const BigInt order)
+BigInt calculate_result(const BigInt c1, 
+                        const BigInt c2,
+                        const BigInt d1, 
+                        const BigInt d2, 
+                        const BigInt order)
 {
     BigInt numerator, denominator, result;
     if(d1 == d2) {
         printf("Cannot calculate the discrete log\n");
-        return 1;
+        return -1;
     }
 
     /* numerator = (c1 - c2) mod order */
@@ -29,41 +32,38 @@ BigInt calculate_result(const BigInt c1, const BigInt c2, \
     return result;
 }
 
+
 /* this function returns P.x % L */
 /* Pay attention to the point at infinity, which is represented by (-1, -1) */
-BigInt partition_function(const Point* P) {
+BigInt partition_function(const Point P) {
     BigInt result;
-    result = P->x % L;
+    result = P.x % L;
 
     /* add L to result if P->x == -1 */
     if(result < 0) result += L;
     return result;
 }
 
+
 BigInt random_number(const BigInt max)
 {
-    /* OBS: rand() returns integer not long */
-    /*
-    BigInt number = random();
-    number <<= 32;
-    number |= random();
-    return number % max;
-    */
-    return genrand64_int64() % max;
+    gmp_randclass r1 (gmp_randinit_default);
+    BigInt temp;
+    //temp = genrand64_int64();
+    temp = r1.get_z_range(max);
+    return temp;
 }
 
 int init_branches(Triple *branches,
                   const EllipticCurve ec,
-                  const Point* P, 
-                  const Point* Q)
+                  const Point P, 
+                  const Point Q)
 {
     BigInt aj, bj;
     int i;
 
     for(i = 0; i < L; i++) {
-        Point* Rj = point_alloc();
-        Point* Ptemp = point_alloc();
-        Point* Qtemp = point_alloc();
+        Point Rj, Ptemp, Qtemp;
 
         aj = random_number(ec.order);
         bj = random_number(ec.order);
@@ -72,26 +72,26 @@ int init_branches(Triple *branches,
         ecc_add(Rj, ec, Ptemp, Qtemp);
         branches[i].c = aj;
         branches[i].d = bj;
-        branches[i].point = *Rj;
+        branches[i].point = Rj;
     }
 
     return 0;
 }
 
 void r_adding_walk(const EllipticCurve ec,
-                   BigInt* c,
-                   BigInt* d, 
-                   Point* X, 
+                   BigInt& c,
+                   BigInt& d, 
+                   Point& X, 
                    const Triple* branches, 
                    const unsigned long j)
 {
-    *c = (*c + branches[j].c) % ec.order;
-    *d = (*d + branches[j].d) % ec.order;
-    ecc_add(X, ec, X, &branches[j].point);
+    c = (c + branches[j].c) % ec.order;
+    d = (d + branches[j].d) % ec.order;
+    ecc_add(X, ec, X, branches[j].point);
 }
 
-int isDistinguished(Point* P) {
-    return P->x != -1 && count_1bits(P->x) <= 5;
+int isDistinguished(Point P) {
+    return P.x != -1 && count_1bits(P.x) <= 5;
 }
 
 
