@@ -1,5 +1,5 @@
 CC = g++
-MPICC = mpicc
+MPICC = mpic++
 
 MAIN = main.cpp
 
@@ -8,25 +8,25 @@ SRC = point.cpp \
       pollardrho.cpp \
 	  pollardrho_serial.cpp \
 	  pollardrho_parallel_fork.cpp \
-	  hashtable.cpp
-	  #pollardrho_parallel_mpi.c \
+	  hashtable.cpp \
+	  pollardrho_parallel_mpi.cpp
 	  #mersenne_twister.c \
-	  #watches.c \
+	  watches.c 
 
-SRC_MPI = pollardrho.c \
-    	  point.c \
-		  ecc.c \
-		  pollardrho_parallel_mpi_main.c \
-	      mersenne_twister.c \
-	      watches.c \
-		  hashtable.c 
+SRC_MPI = pollardrho.cpp \
+    	  point.cpp \
+		  ecc.cpp \
+		  pollardrho_parallel_mpi_main.cpp \
+		  hashtable.cpp
+	      #mersenne_twister.cpp \
+	      watches.c 
 
 TEST_DIR = tests
 
 SRC_TESTS = $(TEST_DIR)/testECC.cpp \
 			$(TEST_DIR)/testPoint.cpp \
 			$(TEST_DIR)/unittests.cpp \
-			$(TEST_DIR)/testPollard.cpp \
+			$(TEST_DIR)/testPollard.cpp
 
 CFLAGS = -W -g #-std=gnu99
 LIBS = -lm
@@ -38,7 +38,7 @@ TARGET_TESTS = $(TEST_DIR)/tests
 
 all: $(SRC)
 	$(CC) -o $(TARGET) $(SRC) $(MAIN) $(CFLAGS) $(LIBS) $(GMPLIB)
-	#$(MPICC) -o $(TARGET_MPI) $(SRC_MPI)
+	$(MPICC) -o $(TARGET_MPI) $(SRC_MPI) $(CFLAGS) $(LIBS) $(GMPLIB)
 
 
 # Compile and Run Tests

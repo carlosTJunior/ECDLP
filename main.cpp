@@ -16,11 +16,6 @@ using namespace std;
 void init_random_number_generator()
 {
     srandom(time(NULL));
-    //long long seed = random();
-    //seed <<= 30;
-    //seed |= random();
-
-    //randclass.seed(seed);
 }
 
 int main(int argc, char* argv[])
@@ -66,9 +61,9 @@ int main(int argc, char* argv[])
                 pollard_algorithm = pollardrho_parallel_fork;
             }
             /* parallel using MPI */
-            //else if(strcmp(optarg, "mpi") == 0) {
-            //    pollard_algorithm = pollardrho_parallel_mpi;
-            //}
+            else if(strcmp(optarg, "mpi") == 0) {
+                pollard_algorithm = pollardrho_parallel_mpi;
+            }
             break;
 
         default:
@@ -83,8 +78,8 @@ int main(int argc, char* argv[])
     }
     if(pollard_algorithm == NULL) {
         fprintf(stdout, "Algorithm not selected: Using 'Serial' as default\n");
-        //pollard_algorithm = pollardrho_serial;
-        pollard_algorithm = pollardrho_parallel_fork;
+        pollard_algorithm = pollardrho_serial;
+        //pollard_algorithm = pollardrho_parallel_fork;
     }
 
     init_random_number_generator();

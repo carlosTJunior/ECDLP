@@ -50,7 +50,6 @@ void client_func(const EllipticCurve ec,
     ecc_add(X, ec, Ptemp, Qtemp); /* X = cP + dQ */
 
     for (;;) {
-        cout << "C";
         int j = partition_function(X);
         (*iteration)(ec, c, d, X, branches, j);
 

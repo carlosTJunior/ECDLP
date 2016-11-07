@@ -1,5 +1,7 @@
+#include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include "ecc.h"
 
 int _sumWithInfinityPoint(Point& R, const Point P, const Point Q);
@@ -7,8 +9,14 @@ int _sumWithInfinityPoint(Point& R, const Point P, const Point Q);
 
 void ecc_description(const EllipticCurve ec)
 {
-    //printf("E(F_%lld): y^2 = x^3 + %lldx + %lld, #E(F_%lld) = %lld\n", 
-    //        ec.p, ec.a, ec.b, ec.p, ec.order);
+    char* description;
+    sprintf(description, "E(F_%s): y^2 = x^3 + %sx + %s, #E(F_%s) = %s",
+            ec.p.get_str(10).c_str(), 
+            ec.a.get_str(10).c_str(), 
+            ec.b.get_str(10).c_str(), 
+            ec.p.get_str(10).c_str(), 
+            ec.order.get_str(10).c_str());
+    std::cout << description << "\n\n";
 }
 
 int ecc_add(Point& R, const EllipticCurve ec, const Point P, const Point Q)
@@ -95,11 +103,12 @@ int ecc_mul(Point& R, const EllipticCurve ec, const BigInt n, const Point P)
     return 0;
 }
 
+/* yet to implement 
 int ecc_halving(Point* R, const EllipticCurve ec, const Point* P)
 {
-    /* yet to implement */
     return 0;
 }
+*/
 
 BigInt
 _lambda(const EllipticCurve ec, const Point P, const Point Q)

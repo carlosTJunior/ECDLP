@@ -1,5 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 #include <stddef.h> /* function offsetof() */
 #include <mpi.h>
 #include <time.h>
@@ -7,9 +8,12 @@
 #include "pollardrho.h"
 
 #define HASHTABLE_SIZE 50000
+#define STRLEN 200
 
 void client(int rank);
 void server(int rank, int size);
+
+using namespace std;
 
 int main(int argc, char** argv) {
     srandom(time(NULL));
@@ -20,51 +24,24 @@ int main(int argc, char** argv) {
      * mpiexec -n 4 ./mpiprog ec.p ec.a ec.b ec.order P.x P.y Q.x Q.y
      */
     EllipticCurve ec;
-    Point *P, *Q;
-    Triple* branches;
+    Point P;
+    P.x = argv[5];
+    P.y = argv[6];
+    Point Q;
+    Q.x = argv[7];
+    Q.y = argv[8];
+    Triple branches[32];
 
     if(argc < 9) exit(1);
 
-    ec.p = atol(argv[1]);
-    ec.a = atol(argv[2]);
-    ec.b = atol(argv[3]);
-    ec.order = atol(argv[4]);
-
-    P = point_alloc();
-    Q = point_alloc();
-
-    point_init(P, atol(argv[5]), atol(argv[6]));
-    point_init(Q, atol(argv[7]), atol(argv[8]));
+    ec.p = argv[1];
+    ec.a = argv[2];
+    ec.b = argv[3];
+    ec.order = argv[4];
 
     int rank, size;
 
-    branches = (Triple*) malloc(32 * sizeof(Triple));
-
     init_branches(branches, ec, P, Q);
-
-
-    /* 
-     * Create MPI_Triple_type for our Triple here
-     */
-    const int nItems = 4;
-    int blocklengths[4] = {1, 1, 1, 1};
-    MPI_Datatype types[4] = {MPI_LONG_LONG_INT,
-                             MPI_LONG_LONG_INT,
-                             MPI_LONG_LONG_INT,
-                             MPI_LONG_LONG_INT};
-    MPI_Datatype MPI_Triple_type;
-    MPI_Aint offsets[4];
-    offsets[0] = offsetof(Triple, c);
-    offsets[1] = offsetof(Triple, d);
-    offsets[2] = offsetof(Triple, point.x);
-    offsets[3] = offsetof(Triple, point.y);
-    MPI_Type_create_struct(nItems, 
-                           blocklengths, 
-                           offsets, 
-                           types, 
-                           &MPI_Triple_type);
-    MPI_Type_commit(&MPI_Triple_type);
-
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -78,13 +55,29 @@ int main(int argc, char** argv) {
 
         int numRead;
         Triple t, ct; 
-        Hashtable* htable;
-        htable = hashtable_create(HASHTABLE_SIZE);
+        Hashtable htable(HASHTABLE_SIZE);
+
+        char str[STRLEN];
+        memset(str, 0, STRLEN);
+        char* token;
 
         while(1) {
-            MPI_Recv(&t, 1, MPI_Triple_type, MPI_ANY_SOURCE,
+            //cout << "Server here\n"; 
+            MPI_Recv(str, STRLEN, MPI_CHAR, MPI_ANY_SOURCE,
                      MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            if( !hashtable_insert(htable, &t, &ct) ) {
+            cout << "RECEIVED: " << str << "\n";
+
+            token = strtok(str, ":");
+            t.c = token;
+            token = strtok(NULL, ":");
+            t.d = token;
+            token = strtok(NULL, ":");
+            t.point.x = token;
+            token = strtok(NULL, ":");
+            t.point.y = token;
+
+            if( !htable.insert(t, ct) ) {
+                //cout << "Cannot insert into hashtable\n";
                 int stop = 1;
                 /* Send stop to other processes */
                 for(i = 1; i < size; i++) {
@@ -92,11 +85,12 @@ int main(int argc, char** argv) {
                 }
                 break;
             }
+            memset(str, 0, STRLEN);
         }
 
         result = calculate_result(t.c, ct.c, t.d, ct.d, ec.order);
 
-        printf("****** SERVER: RESULT IS %lld ********\n", result);
+        printf("****** SERVER: RESULT IS %s ********\n", result.get_str().c_str());
 
     /* CLIENTS CODE */
     } else {
@@ -105,43 +99,40 @@ int main(int argc, char** argv) {
         int stop = 0;
         MPI_Request recv_req;
 
-        Point *X = point_alloc();
-
         c = random_number(ec.order) * rank % ec.order;
         d = random_number(ec.order) * rank % ec.order;
 
-        Point* Ptemp = point_alloc(); /* cP */
+        Point X, Ptemp, Qtemp;
         ecc_mul(Ptemp, ec, c, P);
-        Point* Qtemp = point_alloc(); /* dQ */
         ecc_mul(Qtemp, ec, d, Q);
         ecc_add(X, ec, Ptemp, Qtemp); /* X = cP + dQ */
 
+        cout << "Client " << rank << endl;
+
         for (;;) {
+            //cout << "Client here\n";
             MPI_Irecv(&stop, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &recv_req);
             if(stop)    break;
 
             int j = partition_function(X);
 
             //(*iteration)(ec, &c, &d, X, branches, j);
-            r_adding_walk(ec, &c, &d, X, branches, j);
+            r_adding_walk(ec, c, d, X, branches, j);
 
             if ( isDistinguished(X) ) {
-                Triple t;
-                t.c = c;
-                t.d = d;
-                point_copy(&t.point, X);
+                char *str;
+                sprintf(str, "%s:%s:%s:%s", c.get_str(10).c_str(),
+                                            d.get_str(10).c_str(),
+                                            X.x.get_str(10).c_str(),
+                                            X.y.get_str(10).c_str());
+                cout << "Sending (" << str << ")\n";
 
                 // Send Triple to Server
-                MPI_Send(&t, 1, MPI_Triple_type, 0, 0, MPI_COMM_WORLD);
+                MPI_Send(str, STRLEN, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
             }
         }
         //printf("----- Client %d finishing execution ------\n", rank);
-
-        point_destroy(Ptemp);
-        point_destroy(Qtemp);
-        point_destroy(X);
     }
 
-    MPI_Type_free(&MPI_Triple_type);
     MPI_Finalize();
 }
