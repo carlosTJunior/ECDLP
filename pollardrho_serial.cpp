@@ -1,16 +1,19 @@
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include "pollardrho.h"
 
+using namespace std;
+
 BigInt pollardrho_serial(const EllipticCurve ec, 
-                         const Point* P,
-                         const Point* Q, 
+                         const Point P,
+                         const Point Q, 
                          void (*iteration)(const EllipticCurve ec,
-                                           BigInt* c,
-                                           BigInt* d,
-                                           Point* X,
+                                           BigInt& c,
+                                           BigInt& d,
+                                           Point& X,
                                            const Triple* branches,
                                            const unsigned long i))
 {
@@ -22,8 +25,7 @@ BigInt pollardrho_serial(const EllipticCurve ec,
 
     /* Floyd cycle detection algorithm */
     /* c1, d1 and X1 are Tortoise vars, c2, d2 and X2 are Hare vars */
-    Point *X1 = point_alloc();
-    Point *X2 = point_alloc();
+    Point X1, X2;
     BigInt c1, d1, c2, d2; 
 
     c1 = random_number(ec.order);
@@ -31,9 +33,8 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     c2 = c1;
     d2 = d1;
 
-    Point* Ptemp = point_alloc(); /* cP */
+    Point Ptemp, Qtemp;
     ecc_mul(Ptemp, ec, c1, P);
-    Point* Qtemp = point_alloc(); /* dQ */
     ecc_mul(Qtemp, ec, d1, Q);
     ecc_add(X1, ec, Ptemp, Qtemp); /* X1 = cP + dQ */
     ecc_add(X2, ec, Ptemp, Qtemp); /* X2 = X1 */
@@ -42,34 +43,32 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     int has_collided = 0;
     unsigned long j;
 
-    double itime = wtc_wtime();
+    //double itime = wtc_wtime();
     while(!has_collided) {
         j = partition_function(X1);
-        (*iteration)(ec, &c1, &d1, X1, branches, j);
+        (*iteration)(ec, c1, d1, X1, branches, j);
 
         for(i = 0; i < 2; i++) {
             j = partition_function(X2);
-            (*iteration)(ec, &c2, &d2, X2, branches, j);
+            (*iteration)(ec, c2, d2, X2, branches, j);
         }
-        if(point_is_equal(X1, X2))
+        if(X1 == X2)
         {
             printf("---------------------------------------------\n");
-            printf("Collision found at point\n");
-            printf("X(%lld, %lld)\n", X1->x, X1->y);
-            printf("With values \n");
-            printf("\tc1 = %lld, d1 = %lld\n\tc2 = %lld, d2 = %lld\n", \
+            cout << "Collision found at point\n";
+            cout << "(" << X1.x << ", " << X1.y << ")\n";
+            //printf("X(%lld, %lld)\n", X1.x, X1.y);
+            cout << "With values \n";
+            cout << "\tc1 = " << c1 << ", d1 = " << d1 << "\n\tc2 = " << c2 << ", d2 = " << d2 << endl;
+            //printf("\tc1 = %lld, d1 = %lld\n\tc2 = %lld, d2 = %lld\n", \
                     c1, d1, c2, d2);
             has_collided = 1;
         }
     }
-    double ftime = wtc_wtime();
-    printf("Time to find a collision: %.9lf seconds\n", ftime - itime);
+    //double ftime = wtc_wtime();
+    //printf("Time to find a collision: %.9lf seconds\n", ftime - itime);
 
     result = calculate_result(c1, c2, d1, d2, ec.order);
     
-    point_destroy(Ptemp);
-    point_destroy(Qtemp);
-    point_destroy(X1);
-    point_destroy(X2);
     return result;
 }

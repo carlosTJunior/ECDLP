@@ -35,22 +35,25 @@ BigInt calculate_result(const BigInt c1,
 
 /* this function returns P.x % L */
 /* Pay attention to the point at infinity, which is represented by (-1, -1) */
-BigInt partition_function(const Point P) {
-    BigInt result;
-    result = P.x % L;
+unsigned long partition_function(const Point P) {
+    unsigned long result;
+    if(P.x == -1)
+        result = L - 1;
+    else 
+        result = (P.x).get_ui() % L;
 
-    /* add L to result if P->x == -1 */
-    if(result < 0) result += L;
     return result;
 }
 
 
 BigInt random_number(const BigInt max)
 {
-    gmp_randclass r1 (gmp_randinit_default);
+    gmp_randclass r (gmp_randinit_mt);
+    int seed = random();
+    r.seed(seed);
+
     BigInt temp;
-    //temp = genrand64_int64();
-    temp = r1.get_z_range(max);
+    temp = r.get_z_range(max);
     return temp;
 }
 
@@ -90,7 +93,7 @@ void r_adding_walk(const EllipticCurve ec,
     ecc_add(X, ec, X, branches[j].point);
 }
 
-int isDistinguished(Point P) {
+bool isDistinguished(Point P) {
     return P.x != -1 && count_1bits(P.x) <= 5;
 }
 

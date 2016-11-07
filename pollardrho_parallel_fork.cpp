@@ -1,5 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -9,19 +10,20 @@
 
 #include "pollardrho.h"
 
-
 #define FIFO "pfifo"
 #define HASHTABLE_SIZE 50000
+#define STRLEN 200
 
+using namespace std;
 
 void client_func(const EllipticCurve ec,
-                 const Point* P,
-                 const Point* Q,
+                 const Point P,
+                 const Point Q,
                  Triple* branches,
                  void (*iteration)(const EllipticCurve ec,
-                                   BigInt* c,
-                                   BigInt* d,
-                                   Point* X,
+                                   BigInt& c,
+                                   BigInt& d,
+                                   Point& X,
                                    const Triple* branches,
                                    const unsigned long j))
 {
@@ -34,48 +36,49 @@ void client_func(const EllipticCurve ec,
         fprintf(stderr, "Error: cannot open FIFO for writing\n");
         exit(1);
     }
+    cout << "Client opened FIFO\n";
 
     /* BEGIN - parallel */
-    Point *X = point_alloc();
+    Point X;
 
     c = random_number(ec.order);
     d = random_number(ec.order);
 
-    Point* Ptemp = point_alloc(); /* cP */
+    Point Ptemp, Qtemp;
     ecc_mul(Ptemp, ec, c, P);
-    Point* Qtemp = point_alloc(); /* dQ */
     ecc_mul(Qtemp, ec, d, Q);
     ecc_add(X, ec, Ptemp, Qtemp); /* X = cP + dQ */
 
     for (;;) {
+        cout << "C";
         int j = partition_function(X);
-        (*iteration)(ec, &c, &d, X, branches, j);
+        (*iteration)(ec, c, d, X, branches, j);
 
         if ( isDistinguished(X) ) {
-            Triple t;
-            t.c = c;
-            t.d = d;
-            point_copy(&t.point, X);
-            if(write(ffd, &t, 4 * sizeof(BigInt)) > 0) {
+            char *str;
+
+            sprintf(str, "%s:%s:%s:%s", c.get_str(10).c_str(),
+                                        d.get_str(10).c_str(),
+                                        X.x.get_str(10).c_str(),
+                                        X.y.get_str(10).c_str());
+
+            if(write(ffd, str, strlen(str) ) > 0) {
+                printf("CLIENT WROTE %s\n", str);
             }
         }
     }
 
     close(ffd);
     /* END - parallel */
-
-    point_destroy(Ptemp);
-    point_destroy(Qtemp);
-    point_destroy(X);
 }
 
 BigInt pollardrho_parallel_fork(const EllipticCurve ec,
-                                const Point* P,
-                                const Point* Q,
+                                const Point P,
+                                const Point Q,
                                 void (*iteration)(const EllipticCurve ec,
-                                                  BigInt* c,
-                                                  BigInt* d,
-                                                  Point* X,
+                                                  BigInt& c,
+                                                  BigInt& d,
+                                                  Point& X,
                                                   const Triple* branches,
                                                   const unsigned long i))
 {
@@ -102,13 +105,13 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
             ;
             int ffd, numRead;
             Triple t, ct; 
-            Hashtable* htable;
-            htable = hashtable_create(HASHTABLE_SIZE);
+            Hashtable htable(HASHTABLE_SIZE);
 
             if( (ffd = open(FIFO, O_RDONLY)) == -1 ) {
                 fprintf(stderr, "Error: cannot open FIFO for writing\n");
                 exit(1);
             }
+            cout << "Server opened FIFO\n";
 
             /* Modify flags to use nonblocking read on fifo */
             int flags = fcntl(ffd, F_GETFL);
@@ -116,15 +119,28 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
             if(fcntl(ffd, F_SETFL, flags) == -1)
                 fprintf(stderr, "Cannot modify flags\n");
 
+            char str[STRLEN];
+            memset(str, 0, STRLEN); 
+            char *token;
             while(1) {
-                numRead = read(ffd, &t, 4 * sizeof(BigInt));
-                if( numRead > 0) {
-                    if( !hashtable_insert(htable, &t, &ct) ) {
+                numRead = read(ffd, str, STRLEN);
+                if( numRead > 0 ) {
+                    token = strtok(str, ":");
+                    t.c = token;
+                    token = strtok(NULL, ":");
+                    t.d = token;
+                    token = strtok(NULL, ":");
+                    t.point.x = token;
+                    token = strtok(NULL, ":");
+                    t.point.y = token;
+                    cout << "READ (" << t.c << ", " << t.d << ", " << t.point.x << ", " << t.point.y << ")\n";
+                    if( !htable.insert(t, ct) ) {
                         /* Kill child process before return */
                         kill(chldPid, SIGTERM);
                         break;
                     }
                 }
+                memset(str, 0, STRLEN); 
             }
             close(ffd);
             result = calculate_result(t.c, ct.c, t.d, ct.d, ec.order);

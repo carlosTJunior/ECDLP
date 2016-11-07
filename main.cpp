@@ -3,22 +3,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <iostream>
 
 #include "pollardrho.h"
 #include "mersenne_twister.h"
 
+// Global randclass declared in pollardrho.h
+//gmp_randclass randclass(gmp_randinit_mt);
+
+using namespace std;
+
 void init_random_number_generator()
 {
     srandom(time(NULL));
-    long long seed = random();
-    seed <<= 30;
-    seed |= random();
-    init_genrand64(seed);
+    //long long seed = random();
+    //seed <<= 30;
+    //seed |= random();
 
-    /*
-    long long init[4]={0x12345LL, 0x23456LL, 0x34567LL, 0x45678LL}, length=4;
-    init_by_array64(init, length);
-    */
+    //randclass.seed(seed);
 }
 
 int main(int argc, char* argv[])
@@ -27,18 +29,18 @@ int main(int argc, char* argv[])
 
     /* Pointer to a iteration function to be used */
     void (*iteration_function)(const EllipticCurve,
-                               BigInt*, BigInt*, Point*,
+                               BigInt&, BigInt&, Point&,
                                const Triple*,
                                const unsigned long);
 
     /* Pointer to a Pollard Rho algorithm version to be used */
     BigInt (*pollard_algorithm)(const EllipticCurve ec, 
-                                const Point* P,
-                                const Point* Q, 
+                                const Point P,
+                                const Point Q, 
                                 void (*iteration)(const EllipticCurve ec,
-                                                  BigInt* c,
-                                                  BigInt* d,
-                                                  Point* X,
+                                                  BigInt& c,
+                                                  BigInt& d,
+                                                  Point& X,
                                                   const Triple* branches,
                                                   const unsigned long i));
 
@@ -64,9 +66,9 @@ int main(int argc, char* argv[])
                 pollard_algorithm = pollardrho_parallel_fork;
             }
             /* parallel using MPI */
-            else if(strcmp(optarg, "mpi") == 0) {
-                pollard_algorithm = pollardrho_parallel_mpi;
-            }
+            //else if(strcmp(optarg, "mpi") == 0) {
+            //    pollard_algorithm = pollardrho_parallel_mpi;
+            //}
             break;
 
         default:
@@ -81,59 +83,45 @@ int main(int argc, char* argv[])
     }
     if(pollard_algorithm == NULL) {
         fprintf(stdout, "Algorithm not selected: Using 'Serial' as default\n");
-        pollard_algorithm = pollardrho_serial;
+        //pollard_algorithm = pollardrho_serial;
+        pollard_algorithm = pollardrho_parallel_fork;
     }
 
     init_random_number_generator();
 
     /*------------------------------ setting Curves and ECDLP Points -----------------------------*/
     /*
-    EllipticCurve ec = ecc_create(229, 1, 44, 239);
-    ecc_description(ec);
-    Point *P = point_alloc();
-    point_init(P, 5, 116);
-    Point *Q = point_alloc();
-    point_init(Q, 155, 166);
+    BigInt p(229), a(1), b(44), order(239);
+    BigInt Px(5), Py(116);
+    BigInt Qx(155), Qy(166);
 
-    EllipticCurve ec = ecc_create(69234577397554139,
-                                  64326,
-                                  11751,
-                                  69234577237507391);
-    ecc_description(ec);
-    Point *P = point_alloc();
-    point_init(P, 39361571180675947, 7991682211253487);
-    Point *Q = point_alloc();
-    point_init(Q, 51992249945632156, 48952372232107871);
-
-    EllipticCurve ec = ecc_create(2879867477,
-                                  62293,
-                                  47905,
-                                  2879882063);
-    ecc_description(ec);
-    Point *P = point_alloc();
-    point_init(P, 1482193291, 1063050205);
-    Point *Q = point_alloc();
-    point_init(Q, 2146105060, 1451020666);
+    BigInt p(69234577397554139), a(64326), b(11751), order(69234577237507391);
+    BigInt Px(39361571180675947), Py(7991682211253487);
+    BigInt Qx(51992249945632156), Qy(48952372232107871);
     */
 
-    EllipticCurve ec = ecc_create(7919,
-                                  1001,
-                                  75,
-                                  7889);
+    BigInt p(2879867477), a(62293), b(47905), order(2879882063);
+    BigInt Px(1482193291), Py(1063050205);
+    BigInt Qx(2146105060), Qy(1451020666);
+
+    /*
+    BigInt p(7919), a(1001), b(75), order(7889);
+    BigInt Px(4023), Py(6036);
+    BigInt Qx(4135), Qy(3169);
+    */
+
+    EllipticCurve ec(p, a, b, order);
     ecc_description(ec);
-    Point *P = point_alloc();
-    point_init(P, 4023, 6036);
-    Point *Q = point_alloc();
-    point_init(Q, 4135, 3169);
+    Point P(Px, Py);
+    Point Q(Qx, Qy);
     /*-------------------------------- Curves and Points ending setting ---------------------------*/
 
     BigInt result = 0;
 
     result = (*pollard_algorithm)(ec, P, Q, iteration_function);
 
-    printf("Result is %lld\n", result);
-    point_destroy(P);
-    point_destroy(Q);
+    //printf("Result is %lld\n", result);
+    cout << "Result is " << result << endl;
 
     return 0;
 }
