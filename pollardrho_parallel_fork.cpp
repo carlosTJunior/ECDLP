@@ -36,7 +36,7 @@ void client_func(const EllipticCurve ec,
         fprintf(stderr, "Error: cannot open FIFO for writing\n");
         exit(1);
     }
-    cout << "Client opened FIFO\n";
+    cout << "Client " << getpid() << " opened FIFO\n";
 
     /* BEGIN - parallel */
     Point X;
@@ -54,7 +54,7 @@ void client_func(const EllipticCurve ec,
         (*iteration)(ec, c, d, X, branches, j);
 
         if ( isDistinguished(X) ) {
-            char *str;
+            char str[STRLEN] = {0};
 
             sprintf(str, "%s:%s:%s:%s", c.get_str(10).c_str(),
                                         d.get_str(10).c_str(),
@@ -62,7 +62,7 @@ void client_func(const EllipticCurve ec,
                                         X.y.get_str(10).c_str());
 
             if(write(ffd, str, strlen(str) ) > 0) {
-                printf("CLIENT WROTE %s\n", str);
+                //printf("CLIENT WROTE %s\n", str);
             }
         }
     }
@@ -110,7 +110,7 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
                 fprintf(stderr, "Error: cannot open FIFO for writing\n");
                 exit(1);
             }
-            cout << "Server opened FIFO\n";
+            cout << "Server " << getpid() << " opened FIFO\n";
 
             /* Modify flags to use nonblocking read on fifo */
             int flags = fcntl(ffd, F_GETFL);
@@ -132,7 +132,7 @@ BigInt pollardrho_parallel_fork(const EllipticCurve ec,
                     t.point.x = token;
                     token = strtok(NULL, ":");
                     t.point.y = token;
-                    cout << "READ (" << t.c << ", " << t.d << ", " << t.point.x << ", " << t.point.y << ")\n";
+                    //cout << "READ (" << t.c << ", " << t.d << ", " << t.point.x << ", " << t.point.y << ")\n";
                     if( !htable.insert(t, ct) ) {
                         /* Kill child process before return */
                         kill(chldPid, SIGTERM);

@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     */
 
     EllipticCurve ec(p, a, b, order);
-    ecc_description(ec);
+    //ecc_description(ec);
     Point P(Px, Py);
     Point Q(Qx, Qy);
     /*-------------------------------- Curves and Points ending setting ---------------------------*/

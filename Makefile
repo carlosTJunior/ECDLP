@@ -47,3 +47,7 @@ ctests: $(SRC_TESTS)
 
 rtests:
 	./$(TARGET_TESTS)
+
+clean: $(TARGET) $(TARGET_MPI)
+	rm $(TARGET) $(TARGET_MPI)
+	rm pfifo
