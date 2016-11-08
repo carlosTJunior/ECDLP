@@ -22,7 +22,7 @@ BigInt pollardrho_parallel_mpi(const EllipticCurve ec,
                                                  const unsigned long i))
 {
     iteration = NULL;
-    char *command;
+    char command[250] = {0};
     BigInt res(1);
     sprintf(command, "mpiexec -n %d ./mpiprog %s %s %s %s %s %s %s %s",
                                  NUM_PROCESSES,
