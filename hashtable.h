@@ -13,7 +13,7 @@ struct Triple {
     Triple(BigInt c, BigInt d, Point P) : c(c), d(d), point(P) {}
 };
 
-struct Chain;
+class Chain;
 
 struct Hashtable {
     long size;

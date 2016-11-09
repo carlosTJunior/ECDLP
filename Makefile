@@ -9,16 +9,14 @@ SRC = point.cpp \
 	  pollardrho_serial.cpp \
 	  pollardrho_parallel_fork.cpp \
 	  hashtable.cpp \
-	  pollardrho_parallel_mpi.cpp
-	  #mersenne_twister.c \
+	  pollardrho_parallel_mpi.cpp \
 	  watches.c 
 
 SRC_MPI = pollardrho.cpp \
     	  point.cpp \
 		  ecc.cpp \
 		  pollardrho_parallel_mpi_main.cpp \
-		  hashtable.cpp
-	      #mersenne_twister.cpp \
+		  hashtable.cpp \
 	      watches.c 
 
 TEST_DIR = tests
@@ -28,7 +26,7 @@ SRC_TESTS = $(TEST_DIR)/testECC.cpp \
 			$(TEST_DIR)/unittests.cpp \
 			$(TEST_DIR)/testPollard.cpp
 
-CFLAGS = -W -g #-std=gnu99
+CFLAGS = -W -Wall -pedantic -Wextra -g #-std=gnu99
 LIBS = -lm
 GMPLIB = -lgmp -lgmpxx
 

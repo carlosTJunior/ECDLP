@@ -60,8 +60,8 @@ BigInt pollardrho_serial(const EllipticCurve ec,
             //printf("X(%lld, %lld)\n", X1.x, X1.y);
             cout << "With values \n";
             cout << "\tc1 = " << c1 << ", d1 = " << d1 << "\n\tc2 = " << c2 << ", d2 = " << d2 << endl;
-            //printf("\tc1 = %lld, d1 = %lld\n\tc2 = %lld, d2 = %lld\n", \
-                    c1, d1, c2, d2);
+            //printf("\tc1 = %lld, d1 = %lld\n\tc2 = %lld, d2 = %lld\n", 
+            //        c1, d1, c2, d2);
             has_collided = 1;
         }
     }

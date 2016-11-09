@@ -9,7 +9,7 @@ int _sumWithInfinityPoint(Point& R, const Point P, const Point Q);
 
 void ecc_description(const EllipticCurve ec)
 {
-    char* description;
+    char description[512] = {0};
     sprintf(description, "E(F_%s): y^2 = x^3 + %sx + %s, #E(F_%s) = %s",
             ec.p.get_str(10).c_str(), 
             ec.a.get_str(10).c_str(), 

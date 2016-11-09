@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "pollardrho.h"
-#include "mersenne_twister.h"
 
 // Global randclass declared in pollardrho.h
 //gmp_randclass randclass(gmp_randinit_mt);

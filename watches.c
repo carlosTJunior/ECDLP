@@ -9,6 +9,9 @@
 #include<math.h>
 #endif
 
+#ifdef __APPLE__
+typedef int clockid_t;
+#endif
 
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))

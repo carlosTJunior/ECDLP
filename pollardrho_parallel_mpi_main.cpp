@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
-#include <stddef.h> /* function offsetof() */
 #include <mpi.h>
 #include <time.h>
 
@@ -49,7 +48,6 @@ int main(int argc, char** argv) {
         int i;
         BigInt result = 0;
 
-        int numRead;
         Triple t, ct; 
         Hashtable htable(HASHTABLE_SIZE);
         MPI_Request send_req;
