@@ -40,7 +40,7 @@ unsigned long partition_function(const Point P) {
     if(P.x == -1)
         result = L - 1;
     else 
-        result = (P.x).get_ui() % L;
+        result = UINT(P.x, result) % L;
 
     return result;
 }

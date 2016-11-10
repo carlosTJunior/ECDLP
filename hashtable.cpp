@@ -47,14 +47,6 @@ bool Chain::search(const Triple triple, Triple& c_triple) const {
     return false;
 }
 
-/*
-long hash (const Triple triple, unsigned long size) {
-
-    return (triple.point.x).get_si() % size;
-    //return triple.point.x % size;
-}
-*/
-
 hashkey_t point_xor(hashkey_t *addr, int siz)
 {
     const int n=siz/sizeof(hashkey_t);

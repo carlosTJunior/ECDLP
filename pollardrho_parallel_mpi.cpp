@@ -26,14 +26,14 @@ BigInt pollardrho_parallel_mpi(const EllipticCurve ec,
     BigInt res(1);
     sprintf(command, "mpiexec -n %d ./mpiprog %s %s %s %s %s %s %s %s",
                                  NUM_PROCESSES,
-                                 ec.p.get_str(10).c_str(),
-                                 ec.a.get_str(10).c_str(),
-                                 ec.b.get_str(10).c_str(),
-                                 ec.order.get_str(10).c_str(),
-                                 P.x.get_str(10).c_str(),
-                                 P.y.get_str(10).c_str(),
-                                 Q.x.get_str(10).c_str(),
-                                 Q.y.get_str(10).c_str());
+                                 STR(ec.p),
+                                 STR(ec.a),
+                                 STR(ec.b),
+                                 STR(ec.order),
+                                 STR(P.x),
+                                 STR(P.y),
+                                 STR(Q.x),
+                                 STR(Q.y));
 
     system(command);
 

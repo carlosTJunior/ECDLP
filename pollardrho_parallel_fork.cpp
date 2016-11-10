@@ -56,10 +56,10 @@ void client_func(const EllipticCurve ec,
         if ( isDistinguished(X) ) {
             char str[STRLEN] = {0};
 
-            sprintf(str, "%s:%s:%s:%s", c.get_str(10).c_str(),
-                                        d.get_str(10).c_str(),
-                                        X.x.get_str(10).c_str(),
-                                        X.y.get_str(10).c_str());
+            sprintf(str, "%s:%s:%s:%s", STR(c),
+                                        STR(d),
+                                        STR(X.x),
+                                        STR(X.y));
 
             if(write(ffd, str, strlen(str) ) > 0) {
                 //printf("CLIENT WROTE %s\n", str);

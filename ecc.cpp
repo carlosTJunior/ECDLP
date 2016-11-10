@@ -11,11 +11,11 @@ void ecc_description(const EllipticCurve ec)
 {
     char description[512] = {0};
     sprintf(description, "E(F_%s): y^2 = x^3 + %sx + %s, #E(F_%s) = %s",
-            ec.p.get_str(10).c_str(), 
-            ec.a.get_str(10).c_str(), 
-            ec.b.get_str(10).c_str(), 
-            ec.p.get_str(10).c_str(), 
-            ec.order.get_str(10).c_str());
+            STR(ec.p),
+            STR(ec.a),
+            STR(ec.b),
+            STR(ec.p),
+            STR(ec.order));
     std::cout << description << "\n\n";
 }
 
@@ -118,7 +118,7 @@ _lambda(const EllipticCurve ec, const Point P, const Point Q)
 
     if(P == Q) {
         denominator = P.y * 2;
-        numerator = (3 * (P.x * P.x) + ec.a) % ec.p;
+        numerator = ((P.x * P.x)*3 + ec.a) % ec.p;
     } else {
         denominator = Q.x - P.x;
         numerator = (Q.y - P.y) % ec.p;

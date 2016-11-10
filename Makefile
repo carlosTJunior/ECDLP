@@ -35,8 +35,12 @@ TARGET_MPI = mpiprog
 TARGET_TESTS = $(TEST_DIR)/tests
 
 all: $(SRC)
-	$(CC) -o $(TARGET) $(SRC) $(MAIN) $(CFLAGS) $(LIBS) $(GMPLIB)
-	$(MPICC) -o $(TARGET_MPI) $(SRC_MPI) $(CFLAGS) $(LIBS) $(GMPLIB)
+	$(CC) -o $(TARGET) $(SRC) $(MAIN) $(CFLAGS) $(LIBS) -I. -DTTMATH_DONT_USE_WCHAR
+	$(MPICC) -o $(TARGET_MPI) $(SRC_MPI) $(CFLAGS) $(LIBS) -I. -DTTMATH_DONT_USE_WCHAR
+
+gmp: $(SRC)
+	$(CC) -D_LIB_GMP -o $(TARGET) $(SRC) $(MAIN) $(CFLAGS) $(LIBS) $(GMPLIB)
+	$(MPICC) -D_LIB_GMP -o $(TARGET_MPI) $(SRC_MPI) $(CFLAGS) $(LIBS) $(GMPLIB)
 
 
 # Compile and Run Tests
