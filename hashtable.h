@@ -2,9 +2,8 @@
 #define _HASHTABLE
 
 #include "point.h"
-#include "watches.h"
-
 #define hashkey_t unsigned long
+
 
 struct Triple {
     BigInt c;
@@ -16,14 +15,15 @@ struct Triple {
     Triple(BigInt c, BigInt d, Point P) : c(c), d(d), point(P) {}
 };
 
-class Chain;
+struct Chain;
 
 struct Hashtable {
     long size;
-    BigInt n_elems;
+    long n_elems;
+    long maxnodes;
     Chain* chain;
 
-    Hashtable (const unsigned long size);
+    Hashtable (long size);
     /*
      * If insert return false, then it found a collision.
      * The c_triple reference will store the value of the triple
