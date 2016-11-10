@@ -80,7 +80,7 @@ int wtc_dateprintf(const char *format, ...)
 }
 
 
-void wtc_open(const int rank, const char const *hname)
+void wtc_open(const int rank, const char* const hname)
 {
   const size_t maxlen=31;
   char fnam[maxlen+1];
@@ -142,7 +142,7 @@ void wtc_init()
 
 }
 
-void wtc_set_name(const int idx, const char const *name)
+void wtc_set_name(const int idx, const char* const name)
 {
    const int i=IDX(idx);
    snprintf(names[i], MAX_LEN , "%s", name);
