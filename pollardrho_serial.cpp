@@ -21,15 +21,20 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     int i;
     BigInt result;
 
+    wtc_change_watch(1);
+
     init_branches(branches, ec, P, Q);
 
+    wtc_change_watch(2);
     /* Floyd cycle detection algorithm */
     /* c1, d1 and X1 are Tortoise vars, c2, d2 and X2 are Hare vars */
     Point X1, X2;
     BigInt c1, d1, c2, d2; 
 
+    wtc_change_watch(3);
     c1 = random_number(ec.order);
     d1 = random_number(ec.order);
+    wtc_change_watch(4);
     c2 = c1;
     d2 = d1;
 
@@ -43,13 +48,16 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     int has_collided = 0;
     unsigned long j;
 
-    //double itime = wtc_wtime();
     while(!has_collided) {
+        wtc_change_watch(5);
         j = partition_function(X1);
+        wtc_change_watch(4);
         (*iteration)(ec, c1, d1, X1, branches, j);
 
         for(i = 0; i < 2; i++) {
+            wtc_change_watch(5);
             j = partition_function(X2);
+            wtc_change_watch(4);
             (*iteration)(ec, c2, d2, X2, branches, j);
         }
         if(X1 == X2)
@@ -57,18 +65,14 @@ BigInt pollardrho_serial(const EllipticCurve ec,
             printf("---------------------------------------------\n");
             cout << "Collision found at point\n";
             cout << "(" << X1.x << ", " << X1.y << ")\n";
-            //printf("X(%lld, %lld)\n", X1.x, X1.y);
             cout << "With values \n";
             cout << "\tc1 = " << c1 << ", d1 = " << d1 << "\n\tc2 = " << c2 << ", d2 = " << d2 << endl;
-            //printf("\tc1 = %lld, d1 = %lld\n\tc2 = %lld, d2 = %lld\n", 
-            //        c1, d1, c2, d2);
             has_collided = 1;
         }
     }
-    //double ftime = wtc_wtime();
-    //printf("Time to find a collision: %.9lf seconds\n", ftime - itime);
-
+    wtc_change_watch(6);
     result = calculate_result(c1, c2, d1, d2, ec.order);
+    wtc_change_watch(7);
     
     return result;
 }

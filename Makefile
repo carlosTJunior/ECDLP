@@ -6,6 +6,7 @@ MAIN = main.cpp
 SRC = point.cpp \
 	  ecc.cpp \
       pollardrho.cpp \
+      random.cpp \
 	  pollardrho_serial.cpp \
 	  pollardrho_parallel_fork.cpp \
 	  hashtable.cpp \
@@ -14,6 +15,7 @@ SRC = point.cpp \
 
 SRC_MPI = pollardrho.cpp \
     	  point.cpp \
+          random.cpp \
 		  ecc.cpp \
 		  pollardrho_parallel_mpi_main.cpp \
 		  hashtable.cpp \
@@ -34,13 +36,15 @@ TARGET = prog
 TARGET_MPI = mpiprog
 TARGET_TESTS = $(TEST_DIR)/tests
 
-all: $(SRC)
-	$(CC) -o $(TARGET) $(SRC) $(MAIN) $(CFLAGS) $(LIBS) -I. -DTTMATH_DONT_USE_WCHAR
-	$(MPICC) -o $(TARGET_MPI) $(SRC_MPI) $(CFLAGS) $(LIBS) -I. -DTTMATH_DONT_USE_WCHAR
+ttmath: $(SRC)
+	$(CC) -o $(TARGET) $(SRC) $(MAIN) $(CFLAGS) $(LIBS) $(GMPLIB) -I. -DTTMATH_DONT_USE_WCHAR
+	$(MPICC) -o $(TARGET_MPI) $(SRC_MPI) $(CFLAGS) $(LIBS) $(GMPLIB) -I. -DTTMATH_DONT_USE_WCHAR
+
+all: ttmath gmp
 
 gmp: $(SRC)
-	$(CC) -D_LIB_GMP -o $(TARGET) $(SRC) $(MAIN) $(CFLAGS) $(LIBS) $(GMPLIB)
-	$(MPICC) -D_LIB_GMP -o $(TARGET_MPI) $(SRC_MPI) $(CFLAGS) $(LIBS) $(GMPLIB)
+	$(CC) -D_LIB_GMP -o $(TARGET).gmp $(SRC) $(MAIN) $(CFLAGS) $(LIBS) $(GMPLIB)
+	$(MPICC) -D_LIB_GMP -o $(TARGET_MPI).gmp $(SRC_MPI) $(CFLAGS) $(LIBS) $(GMPLIB)
 
 
 # Compile and Run Tests
@@ -50,6 +54,7 @@ ctests: $(SRC_TESTS)
 rtests:
 	./$(TARGET_TESTS)
 
-clean: $(TARGET) $(TARGET_MPI)
+clean: $(TARGET) $(TARGET_MPI) $(TARGET).gmp $(TARGET_MPI).gmp
 	rm $(TARGET) $(TARGET_MPI)
+	rm $(TARGET).gmp $(TARGET_MPI).gmp
 	rm pfifo

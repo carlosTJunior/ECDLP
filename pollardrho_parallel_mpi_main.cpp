@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "pollardrho.h"
+#include "random.h"
 
 #define HASHTABLE_SIZE 50000
 #define STRLEN 200
@@ -13,7 +14,6 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    srandom(time(NULL));
     MPI_Init(&argc, &argv);
 
     /*
@@ -35,12 +35,16 @@ int main(int argc, char** argv) {
     ec.a = argv[2];
     ec.b = argv[3];
     ec.order = argv[4];
-
+    
     int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    init_random_number_generator(rank, ec.order);
+
+
 
     init_branches(branches, ec, P, Q);
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     /* SERVER CODE */
@@ -50,7 +54,6 @@ int main(int argc, char** argv) {
 
         Triple t, ct; 
         Hashtable htable(HASHTABLE_SIZE);
-        MPI_Request send_req;
         int stop = 1;
 
 
@@ -74,7 +77,7 @@ int main(int argc, char** argv) {
                 /* Send stop to other processes */
                 stop = 1;
                 for(i = 1; i < size; i++) {
-                    MPI_Isend(&stop, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &send_req);
+                    MPI_Send(&stop, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
                 }
                 break;
             }
@@ -82,13 +85,15 @@ int main(int argc, char** argv) {
 
         result = calculate_result(t.c, ct.c, t.d, ct.d, ec.order);
 
-        printf("****** SERVER: RESULT IS %s ********\n", result.get_str().c_str());
+        printf("****** SERVER: RESULT IS %s ********\n", STR(result));
 
     /* CLIENTS CODE */
     } else {
         BigInt c, d;
-        int stop = 0;
+        int stop = 0, flags = 0;
+
         MPI_Request recv_req;
+        MPI_Status status;
 
         c = random_number(ec.order) * rank % ec.order;
         d = random_number(ec.order) * rank % ec.order;
@@ -100,10 +105,14 @@ int main(int argc, char** argv) {
 
         char str[STRLEN] = {0};
         int j = -1;
+
+        MPI_Irecv(&stop, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &recv_req);
+
         for (;;) {
-            MPI_Irecv(&stop, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &recv_req);
-            if(stop == 1){
-                break;
+            MPI_Request_get_status(recv_req, &flags, &status);
+            if(flags){
+                if(status.MPI_TAG == 1)
+                    break;
             }
 
             j = partition_function(X);
@@ -112,10 +121,10 @@ int main(int argc, char** argv) {
             r_adding_walk(ec, c, d, X, branches, j);
 
             if ( isDistinguished(X) ) {
-                sprintf(str, "%s:%s:%s:%s", c.get_str(10).c_str(),
-                                            d.get_str(10).c_str(),
-                                            X.x.get_str(10).c_str(),
-                                            X.y.get_str(10).c_str());
+                sprintf(str, "%s:%s:%s:%s", STR(c),
+                                            STR(d),
+                                            STR(X.x),
+                                            STR(X.y));
 
                 // Send Triple to Server
                 MPI_Send(str, STRLEN, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
@@ -124,7 +133,6 @@ int main(int argc, char** argv) {
         }
     }
 
-    MPI_Abort(MPI_COMM_WORLD, 1);
     MPI_Finalize();
     return 0;
 }

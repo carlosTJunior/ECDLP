@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "pollardrho.h"
+#include "random.h"
 
 /* Global state to generate random numbers */
 //gmp_randstate_t state;
@@ -40,22 +41,15 @@ unsigned long partition_function(const Point P) {
     if(P.x == -1)
         result = L - 1;
     else 
-        result = UINT(P.x, result) % L;
+#ifdef _LIB_GMP
+        result = P.x.get_ui();
+#else
+        P.x.ToUInt(result);
+#endif
 
-    return result;
+    return result % L;
 }
 
-
-BigInt random_number(const BigInt max)
-{
-    gmp_randclass r (gmp_randinit_mt);
-    int seed = random();
-    r.seed(seed);
-
-    BigInt temp;
-    temp = r.get_z_range(max);
-    return temp;
-}
 
 int init_branches(Triple *branches,
                   const EllipticCurve ec,

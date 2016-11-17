@@ -11,7 +11,10 @@ Icon
 
 prog
 mpiprog
+prog.gmp
+mpiprog.gmp
 tests/tests
+*.txt
 
 # Thumbnails
 ._*
