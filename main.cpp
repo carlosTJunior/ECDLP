@@ -16,19 +16,6 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    wtc_open(0, "singlenode");
-
-    wtc_init();
-    wtc_set_name(0, "Init");
-    wtc_set_name(1, "init_branches");
-    wtc_set_name(2, "alloc");
-    wtc_set_name(3, "random number");
-    wtc_set_name(4, "other");
-    wtc_set_name(5, "partition_function");
-    wtc_set_name(6, "calculate_result");
-    wtc_set_name(7, "point_destroy");
-    wtc_set_name(8, "Finale");
-
     int opt;
 
     /* Pointer to a iteration function to be used */
@@ -91,33 +78,42 @@ int main(int argc, char* argv[])
         //pollard_algorithm = pollardrho_parallel_fork;
     }
 
+    if(pollard_algorithm != pollardrho_parallel_mpi) {
+
+        wtc_open(0, "singlenode");
+        wtc_init();
+        wtc_set_name(0, "init_branches");
+        wtc_set_name(1, "random number");
+        wtc_set_name(2, "partition_function");
+        wtc_set_name(3, "iteration_function");
+        wtc_set_name(4, "calculate_result");
+        wtc_set_name(5, "Modular Inverse");
+        wtc_set_name(6, "other");
+    }
+
+
 
     /*------------------------------ setting Curves and ECDLP Points -----------------------------*/
     /*
     BigInt p(229), a(1), b(44), order(239);
     BigInt Px(5), Py(116);
     BigInt Qx(155), Qy(166);
+
     BigInt p(69234577397554139), a(64326), b(11751), order(69234577237507391);
     BigInt Px(39361571180675947), Py(7991682211253487);
     BigInt Qx(51992249945632156), Qy(48952372232107871);
-    */
 
-//producao
     BigInt p(2879867477), a(62293), b(47905), order(2879882063);
     BigInt Px(1482193291), Py(1063050205);
     BigInt Qx(2146105060), Qy(1451020666);
-/*
-    printf("2879882063 == %s\n", STR(order));
-    BigInt p("2879867477"), a(62293), b(47905), order("2879882063");
-    BigInt Px(1482193291), Py(1063050205);
-    BigInt Qx(2146105060), Qy(1451020666);
-*/
 
-/*
     BigInt p(7919), a(1001), b(75), order(7889);
     BigInt Px(4023), Py(6036);
     BigInt Qx(4135), Qy(3169);
-*/
+    */
+    BigInt p(13576185693893), a(52852), b(48173), order(13576186067033);
+    BigInt Px(4045358028067), Py(11828535504716);
+    BigInt Qx(7671636463977), Qy(895724536264);
 
     init_random_number_generator(0, order);
 
@@ -132,11 +128,12 @@ int main(int argc, char* argv[])
 
     result = (*pollard_algorithm)(ec, P, Q, iteration_function);
 
-    wtc_change_watch(8);
     cout << "Result is " << result << endl;
 
-    wtc_print_watches();
-    wtc_close();
+    if(pollard_algorithm != pollardrho_parallel_mpi) {
+        wtc_print_watches();
+        wtc_close();
+    }
 
     return 0;
 }

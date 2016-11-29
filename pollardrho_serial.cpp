@@ -21,20 +21,20 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     int i;
     BigInt result;
 
-    wtc_change_watch(1);
+    wtc_change_watch(0);
 
     init_branches(branches, ec, P, Q);
 
-    wtc_change_watch(2);
+    wtc_change_watch(6);
     /* Floyd cycle detection algorithm */
     /* c1, d1 and X1 are Tortoise vars, c2, d2 and X2 are Hare vars */
     Point X1, X2;
     BigInt c1, d1, c2, d2; 
 
-    wtc_change_watch(3);
+    wtc_change_watch(1);
     c1 = random_number(ec.order);
     d1 = random_number(ec.order);
-    wtc_change_watch(4);
+    wtc_change_watch(6);
     c2 = c1;
     d2 = d1;
 
@@ -49,16 +49,18 @@ BigInt pollardrho_serial(const EllipticCurve ec,
     unsigned long j;
 
     while(!has_collided) {
-        wtc_change_watch(5);
+        wtc_change_watch(2);
         j = partition_function(X1);
-        wtc_change_watch(4);
+        wtc_change_watch(3);
         (*iteration)(ec, c1, d1, X1, branches, j);
+        wtc_change_watch(6);
 
         for(i = 0; i < 2; i++) {
-            wtc_change_watch(5);
+            wtc_change_watch(2);
             j = partition_function(X2);
-            wtc_change_watch(4);
+            wtc_change_watch(3);
             (*iteration)(ec, c2, d2, X2, branches, j);
+            wtc_change_watch(6);
         }
         if(X1 == X2)
         {
@@ -70,9 +72,9 @@ BigInt pollardrho_serial(const EllipticCurve ec,
             has_collided = 1;
         }
     }
-    wtc_change_watch(6);
+    wtc_change_watch(4);
     result = calculate_result(c1, c2, d1, d2, ec.order);
-    wtc_change_watch(7);
+    wtc_change_watch(6);
     
     return result;
 }

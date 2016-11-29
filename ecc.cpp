@@ -125,7 +125,9 @@ _lambda(const EllipticCurve ec, const Point P, const Point Q)
     }
 
     if(denominator < 0) denominator += ec.p;
+    wtc_change_watch(5);
     denominator = modInverse(denominator, ec.p);
+    wtc_change_watch(6);
 
     if(numerator < 0) numerator += ec.p;
 
@@ -136,6 +138,7 @@ _lambda(const EllipticCurve ec, const Point P, const Point Q)
 
 /* ------------------ Math functions to calculate inverse --------------*/
 BigInt modInverse(BigInt a, BigInt m) {
+#ifndef _LIB_GMP
     BigInt t, q, m0 = m;
     BigInt x0 = 0, x1 = 1;
 
@@ -157,4 +160,7 @@ BigInt modInverse(BigInt a, BigInt m) {
     if (x1 < 0)
         x1 += m0;
     return x1;
+#else
+    /* Call gmplib function to calculate modular inverse */
+#endif
 }

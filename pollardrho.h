@@ -3,7 +3,6 @@
 
 #include "ecc.h"
 #include "hashtable.h"
-#include "watches.h"
 
 /* number of branches */
 #define L 32

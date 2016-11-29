@@ -4,6 +4,7 @@
 /*#define DEBUG*/
 
 #include "point.h"
+#include "watches.h"
 
 struct EllipticCurve {
     BigInt p;

@@ -14,6 +14,16 @@
 using namespace std;
 
 int main(int argc, char** argv) {
+
+    wtc_init();
+    wtc_set_name(0, "init_branches");
+    wtc_set_name(1, "random number");
+    wtc_set_name(2, "partition_function");
+    wtc_set_name(3, "iteration_function");
+    wtc_set_name(4, "calculate_result");
+    wtc_set_name(5, "Modular Inverse");
+    wtc_set_name(6, "other");
+
     MPI_Init(&argc, &argv);
 
     /*
@@ -27,7 +37,7 @@ int main(int argc, char** argv) {
     Point Q;
     Q.x = argv[7];
     Q.y = argv[8];
-    Triple branches[32];
+    Triple branches[L];
 
     if(argc < 9) exit(1);
 
@@ -38,12 +48,14 @@ int main(int argc, char** argv) {
     
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    wtc_open(rank, "MPI");
+
     init_random_number_generator(rank, ec.order);
 
-
-
+    wtc_change_watch(0);
     init_branches(branches, ec, P, Q);
-
+    wtc_change_watch(6);
 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
@@ -83,7 +95,9 @@ int main(int argc, char** argv) {
             }
         }
 
+        wtc_change_watch(4);
         result = calculate_result(t.c, ct.c, t.d, ct.d, ec.order);
+        wtc_change_watch(6);
 
         printf("****** SERVER: RESULT IS %s ********\n", STR(result));
 
@@ -95,8 +109,10 @@ int main(int argc, char** argv) {
         MPI_Request recv_req;
         MPI_Status status;
 
+        wtc_change_watch(1);
         c = random_number(ec.order) * rank % ec.order;
         d = random_number(ec.order) * rank % ec.order;
+        wtc_change_watch(6);
 
         Point X, Ptemp, Qtemp;
         ecc_mul(Ptemp, ec, c, P);
@@ -115,10 +131,13 @@ int main(int argc, char** argv) {
                     break;
             }
 
+            wtc_change_watch(2);
             j = partition_function(X);
 
             //(*iteration)(ec, &c, &d, X, branches, j);
+            wtc_change_watch(3);
             r_adding_walk(ec, c, d, X, branches, j);
+            wtc_change_watch(6);
 
             if ( isDistinguished(X) ) {
                 sprintf(str, "%s:%s:%s:%s", STR(c),
@@ -132,6 +151,8 @@ int main(int argc, char** argv) {
             }
         }
     }
+    wtc_print_watches();
+    wtc_close();
 
     MPI_Finalize();
     return 0;
