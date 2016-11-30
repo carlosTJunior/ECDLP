@@ -112,13 +112,13 @@ int main(int argc, char* argv[])
     BigInt Px(4023), Py(6036);
     BigInt Qx(4135), Qy(3169);
 
-    BigInt p(13576185693893), a(52852), b(48173), order(13576186067033);
-    BigInt Px(4045358028067), Py(11828535504716);
-    BigInt Qx(7671636463977), Qy(895724536264);
-    */
     BigInt p("2879867477"), a("62293"), b("47905"), order("2879882063");
     BigInt Px(1482193291), Py(1063050205);
     BigInt Qx(2146105060), Qy(1451020666);
+    */
+    BigInt p(13576185693893), a(52852), b(48173), order(13576186067033);
+    BigInt Px(4045358028067), Py(11828535504716);
+    BigInt Qx(7671636463977), Qy(895724536264);
 
     init_random_number_generator(0, order);
 

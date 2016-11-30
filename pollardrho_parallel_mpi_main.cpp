@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <mpi.h>
 #include <time.h>
 
@@ -115,6 +116,7 @@ int main(int argc, char** argv) {
         int stop = 0, flags = 0;
 
         MPI_Request recv_req;
+        MPI_Request send_req;
         MPI_Status status;
 
         wtc_change_watch(1);
@@ -155,7 +157,7 @@ int main(int argc, char** argv) {
                                             STR(X.y));
 
                 // Send Triple to Server
-                MPI_Send(str, STRLEN, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
+                MPI_Isend(str, STRLEN, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &send_req);
                 memset(str, 0, STRLEN);
                 wtc_change_watch(7);
             }
