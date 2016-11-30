@@ -120,7 +120,7 @@ bool Hashtable::insert(const Triple triple, Triple& c_triple) {
         this->n_elems++;
         if (this->n_elems >= this->size)
         {
-            wtc_printf("Error: HASH exaust.");
+            wtc_printf("Error: HASH exaust.\n");
             exit(1);
         }
     } else {

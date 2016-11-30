@@ -17,6 +17,7 @@ using namespace std;
 int main(int argc, char* argv[])
 {
     int opt;
+    //char filename[32] = {0};
 
     /* Pointer to a iteration function to be used */
     void (*iteration_function)(const EllipticCurve,
@@ -62,6 +63,9 @@ int main(int argc, char* argv[])
             }
             break;
 
+        //case 'f': /* file with the elliptic curve data */
+        //    filename = optarg;
+
         default:
             iteration_function = r_adding_walk;
             pollard_algorithm = pollardrho_serial;
@@ -103,17 +107,18 @@ int main(int argc, char* argv[])
     BigInt Px(39361571180675947), Py(7991682211253487);
     BigInt Qx(51992249945632156), Qy(48952372232107871);
 
-    BigInt p(2879867477), a(62293), b(47905), order(2879882063);
-    BigInt Px(1482193291), Py(1063050205);
-    BigInt Qx(2146105060), Qy(1451020666);
 
     BigInt p(7919), a(1001), b(75), order(7889);
     BigInt Px(4023), Py(6036);
     BigInt Qx(4135), Qy(3169);
-    */
+
     BigInt p(13576185693893), a(52852), b(48173), order(13576186067033);
     BigInt Px(4045358028067), Py(11828535504716);
     BigInt Qx(7671636463977), Qy(895724536264);
+    */
+    BigInt p("2879867477"), a("62293"), b("47905"), order("2879882063");
+    BigInt Px(1482193291), Py(1063050205);
+    BigInt Qx(2146105060), Qy(1451020666);
 
     init_random_number_generator(0, order);
 
