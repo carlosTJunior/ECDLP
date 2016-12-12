@@ -53,8 +53,16 @@ int main(int argc, char** argv) {
     ec.b = argv[3];
     ec.order = argv[4];
 
+    int seed = 0;
+
     wtc_change_watch(7);
-    init_random_number_generator(rank, ec.order);
+    if(rank == 0) {
+        seed = time(NULL);
+    }
+    MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    init_random_number_generator(time(NULL), ec.order);
+
 
     wtc_change_watch(0);
     init_branches(branches, ec, P, Q);
@@ -115,6 +123,7 @@ int main(int argc, char** argv) {
         int stop = 0, flags = 0;
 
         MPI_Request recv_req;
+        MPI_Request send_req;
         MPI_Status status;
 
         wtc_change_watch(1);
@@ -155,7 +164,7 @@ int main(int argc, char** argv) {
                                             STR(X.y));
 
                 // Send Triple to Server
-                MPI_Send(str, STRLEN, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
+                MPI_Isend(str, STRLEN, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &send_req);
                 memset(str, 0, STRLEN);
                 wtc_change_watch(7);
             }
